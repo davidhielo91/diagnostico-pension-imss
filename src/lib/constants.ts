@@ -70,7 +70,6 @@ export const TIPOS_ACTIVIDAD = [
 ] as const;
 
 export const ESTADOS_TERMINALES = ["Archivado"];
-export const ROLES = ["administrador", "asesor"] as const;
 
 export const PRIORIDAD_COLORS: Record<string, string> = {
   "Alta": "text-red-600 bg-red-50 border-red-200",

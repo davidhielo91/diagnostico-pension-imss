@@ -53,3 +53,5 @@ skills-lock.json
 AGENTS.md
 CLAUDE.md
 CONTEXT.md
+# Local AI runtime state
+.atl/
