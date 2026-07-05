@@ -9,10 +9,14 @@ const okResp = (content: string) => ({
 const errResp = (status = 500) => ({ ok: false, status, json: async () => ({}) });
 
 let fetchMock: ReturnType<typeof vi.fn>;
+let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
   fetchMock = vi.fn();
   vi.stubGlobal("fetch", fetchMock);
+  consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -45,12 +49,14 @@ describe("generarCorreoConIA — first-call fallback bugfix guard", () => {
     fetchMock.mockResolvedValueOnce(okResp("this is not valid json"));
 
     await expect(generarCorreoConIA(baseLead())).resolves.toEqual(fallbackCorreo);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it("does NOT throw and returns the exact fallbackCorreo when the first fetch call rejects (network error)", async () => {
     fetchMock.mockRejectedValueOnce(new Error("network down"));
 
     await expect(generarCorreoConIA(baseLead())).resolves.toEqual(fallbackCorreo);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -96,6 +102,7 @@ describe("generarCorreoConIA — brand-voice guardrail flow", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(result).toEqual(fallbackCorreo);
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
   });
 
   it("falls back when the first response is forbidden and the retry call throws", async () => {
@@ -106,6 +113,7 @@ describe("generarCorreoConIA — brand-voice guardrail flow", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(result).toEqual(fallbackCorreo);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it("strips a markdown JSON fence and parses the body successfully", async () => {
