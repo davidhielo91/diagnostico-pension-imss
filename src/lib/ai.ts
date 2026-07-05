@@ -183,7 +183,12 @@ El asunto debe ser máximo 60 caracteres, directo, menciona su tema de pensión,
   }
 
   const msgs: MistralMessage[] = [{ role: "user", content: prompt }];
-  let resultado = await llamarCorreo(msgs);
+  let resultado: { asunto: string; cuerpo: string };
+  try {
+    resultado = await llamarCorreo(msgs);
+  } catch {
+    return fallbackCorreo;
+  }
 
   if (violaReglasVoz(resultado.asunto + " " + resultado.cuerpo)) {
     const msgsRetry: MistralMessage[] = [
