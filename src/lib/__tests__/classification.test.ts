@@ -13,8 +13,6 @@ import {
   type LeadInput,
 } from "@/lib/classification";
 import {
-  SCORE_UMBRAL_FUERTE,
-  SCORE_UMBRAL_REVISAR,
   PENSION_MINIMA_GARANTIZADA,
   LANDING_URL,
 } from "@/lib/constants";
@@ -145,45 +143,57 @@ describe("calcularScoreViabilidad", () => {
     expect(score).toBe(100);
   });
 
-  it("maps score boundaries to the correct etiqueta", () => {
-    expect(SCORE_UMBRAL_FUERTE).toBe(70);
-    expect(SCORE_UMBRAL_REVISAR).toBe(40);
+  it("maps the real FUERTE threshold (score >= 70) via calcularScoreViabilidad", () => {
+    // All bonuses are multiples of 5, so 69/70 is never reachable — the tightest
+    // real boundary around SCORE_UMBRAL_FUERTE (70) is 65 (below) vs 70 (at threshold).
+    const montoBajo = PENSION_MINIMA_GARANTIZADA - 1000;
 
-    // 70 -> FUERTE (Ley73 +30, pensionado+cesantía +25, edad 60-70 +10, semanas +10 = 75 capped? no cap conditions -> 75, need exactly 70)
-    // Build precisely: Ley73(30) + edad(10) + semanas(10) = 50, plus pension baja bonus(+25) not wanted.
-    // Use Ley73(30) + pensionado/cesantia(25) + edad(10) = 65 -- not 70. Instead directly test via cap-independent combo:
-    // Ley73(30) + edad(10) + semanas(10) + low-pension(25) - but that's 75 not boundary.
-    // Simplify: test boundary using a categoria/temaInteres combo that yields exactly 70 raw with no cap.
-    const input70 = baseInput({
+    // 65: Ley73 (+30) + pensión baja (+25) + edad (+10) = 65, no semanas bonus.
+    const input65 = baseInput({
       temaInteres: "ley 73",
+      situacion: `me pagan ${montoBajo} pesos de pensión`,
+      edad: 65,
+    });
+    const result65 = calcularScoreViabilidad(input65, "Ley 73 relacionada");
+    expect(result65.score).toBe(65);
+    expect(result65.etiqueta).toBe("Revisar");
+
+    // 70: pensionado+cesantía (+25) + pensión baja (+25) + edad (+10) + semanas (+10) = 70.
+    const input70 = baseInput({
+      temaInteres: "cesantía",
       yaEstaPensionado: "si",
-      situacion: "sin montos mencionados",
+      situacion: `me pagan ${montoBajo} pesos de pensión`,
       edad: 65,
       tieneSemanasCotizadas: "si",
     });
-    // Ley73 (+30) + pensionado+cesantía (+25) + edad (+10) + semanas (+10) = 75, above 70 -> still FUERTE
-    const result75 = calcularScoreViabilidad(input70, "Cambio cesantía a vejez probable");
-    expect(result75.score).toBe(75);
-    expect(result75.etiqueta).toBe("Candidato fuerte");
+    const result70 = calcularScoreViabilidad(input70, "Cambio cesantía a vejez probable");
+    expect(result70.score).toBe(70);
+    expect(result70.etiqueta).toBe("Candidato fuerte");
+  });
 
-    // exactly 40 -> REVISAR; exactly 39 is not achievable via additive rules (all multiples of 5),
-    // so verify the boundary condition directly via etiqueta thresholds using constants.
-    const input40 = baseInput({
+  it("maps the real REVISAR threshold (score >= 40) via calcularScoreViabilidad", () => {
+    const montoBajo = PENSION_MINIMA_GARANTIZADA - 1000;
+
+    // 35: pensión baja (+25) + edad (+10) = 35, temaInteres deliberately not an
+    // exact "otro"/"no sé" match so the no-data cap doesn't interfere.
+    const input35 = baseInput({
       temaInteres: "otro tema",
+      situacion: `me pagan ${montoBajo} pesos de pensión`,
+      edad: 65,
+    });
+    const result35 = calcularScoreViabilidad(input35, "No clasificado");
+    expect(result35.score).toBe(35);
+    expect(result35.etiqueta).toBe("Baja viabilidad");
+
+    // 40: Ley73 (+30) + edad (+10) = 40.
+    const input40 = baseInput({
+      temaInteres: "ley 73",
       situacion: "sin montos mencionados",
       edad: 65,
-      tieneSemanasCotizadas: "si",
     });
-    const result40 = calcularScoreViabilidad(input40, "No clasificado");
-    expect(result40.score).toBe(20);
-    expect(result40.etiqueta).toBe("Baja viabilidad");
-
-    // 69 vs 70 and 39 vs 40 boundary check using direct score computation isn't possible without
-    // exporting the etiqueta mapper, so we assert the threshold constants used for classification.
-    expect(69).toBeLessThan(SCORE_UMBRAL_FUERTE);
-    expect(70).toBeGreaterThanOrEqual(SCORE_UMBRAL_FUERTE);
-    expect(39).toBeLessThan(SCORE_UMBRAL_REVISAR);
-    expect(40).toBeGreaterThanOrEqual(SCORE_UMBRAL_REVISAR);
+    const result40 = calcularScoreViabilidad(input40, "Ley 73 relacionada");
+    expect(result40.score).toBe(40);
+    expect(result40.etiqueta).toBe("Revisar");
   });
 });
 
