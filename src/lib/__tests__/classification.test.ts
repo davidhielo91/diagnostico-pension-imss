@@ -8,7 +8,6 @@ import {
   clasificarSegmentoInteres,
   normalizarTelefono,
   extraerMontoPension,
-  generarMensajeWhatsApp,
   generarCorreo,
   type LeadInput,
 } from "@/lib/classification";
@@ -382,16 +381,6 @@ describe("clasificarLead", () => {
       situacion: "tengo toda la información completa sobre mi caso de pensión",
     });
     expect(clasificarLead(input).viabilidad).toBe("No viable por ahora");
-  });
-});
-
-describe("generarMensajeWhatsApp", () => {
-  it("includes the first name and the landing URL with no unresolved placeholders", () => {
-    const msg = generarMensajeWhatsApp("Juan Pérez", "mi situación");
-    expect(msg).toContain("Juan");
-    expect(msg).not.toContain("Pérez");
-    expect(msg).toContain(LANDING_URL);
-    expect(msg).not.toMatch(/\{\{|\}\}/);
   });
 });
 

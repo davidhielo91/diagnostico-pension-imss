@@ -161,7 +161,7 @@ export default function AvisoPrivacidadPage() {
               <a href="mailto:contacto@contadorgerardohuerta.com" style={{ color: "var(--navy)", fontWeight: 600 }}>
                 contacto@contadorgerardohuerta.com
               </a>{" "}
-              con el asunto <em>"Oposición a finalidades secundarias"</em>.
+              con el asunto <em>&quot;Oposición a finalidades secundarias&quot;</em>.
             </p>
           </section>
 

@@ -5,8 +5,6 @@ import {
   SCORE_UMBRAL_REVISAR,
   PENSION_MINIMA_GARANTIZADA,
   ETIQUETAS_SCORE,
-  CATEGORIAS_INTERNAS,
-  ESTADOS_TERMINALES,
 } from "./constants";
 import { notificarNuevoLead, enviarConfirmacionCliente } from "./email";
 import type { Lead } from "@prisma/client";
@@ -412,14 +410,6 @@ export async function crearLeadConClasificacion(
   }
 
   return { lead, esDuplicado: false };
-}
-
-export function generarMensajeWhatsApp(nombre: string, situacion: string): string {
-  const n = nombre.split(" ")[0];
-  return `Hola ${n}, le contactamos del Despacho Fiscal 2087.
-
-Revisamos la información que nos compartió sobre su caso de pensión IMSS. Aquí puede conocer en qué consiste el Diagnóstico de Pensión IMSS y agendar su cita:
-${LANDING_URL}`;
 }
 
 export function generarCorreo(nombre: string, prioridad?: string): { asunto: string; cuerpo: string } {
