@@ -186,7 +186,8 @@ El asunto debe ser máximo 60 caracteres, directo, menciona su tema de pensión,
   let resultado: { asunto: string; cuerpo: string };
   try {
     resultado = await llamarCorreo(msgs);
-  } catch {
+  } catch (err) {
+    console.error(`[ai] generarCorreoConIA: fallo en primer intento para "${lead.nombre}", usando fallback`, err);
     return fallbackCorreo;
   }
 
@@ -198,10 +199,12 @@ El asunto debe ser máximo 60 caracteres, directo, menciona su tema de pensión,
     ];
     try {
       resultado = await llamarCorreo(msgsRetry);
-    } catch {
+    } catch (err) {
+      console.error(`[ai] generarCorreoConIA: fallo en reintento para "${lead.nombre}", usando fallback`, err);
       return fallbackCorreo;
     }
     if (violaReglasVoz(resultado.asunto + " " + resultado.cuerpo)) {
+      console.warn(`[ai] generarCorreoConIA: el reintento volvió a violar la voz de marca para "${lead.nombre}", usando fallback`);
       return fallbackCorreo;
     }
   }
