@@ -1,21 +1,66 @@
 import type { Metadata } from "next";
 import { LandingForm } from "@/components/public/landing-form";
 import { LandingFAQ } from "@/components/public/landing-faq";
+import { LANDING_FAQS } from "@/lib/landing-content";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://pre-diagnostico.contadorgerardohuerta.com";
+
+const businessSchema = {
+  "@context": "https://schema.org",
+  "@type": "AccountingService",
+  name: "Despacho Fiscal 2087",
+  alternateName: "Contador Gerardo Huerta",
+  url: BASE_URL,
+  email: "contacto@contadorgerardohuerta.com",
+  image: `${BASE_URL}/images/contador-gerardo-huerta-perfil.webp`,
+  areaServed: "MX",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "C. Toronja Roja 6275, Ampliación Aeropuerto",
+    addressLocality: "Ciudad Juárez",
+    addressRegion: "Chihuahua",
+    postalCode: "32698",
+    addressCountry: "MX",
+  },
+  sameAs: [
+    "https://www.facebook.com/contadorgerardohuerta",
+    "https://www.tiktok.com/@contadorgerardohuerta",
+    "https://www.youtube.com/@contadorgerardohuerta",
+  ],
+  founder: {
+    "@type": "Person",
+    name: "Gerardo Huerta",
+    jobTitle: "Especialista en pensiones IMSS",
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: LANDING_FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.a.replace(/\n\n/g, " "),
+    },
+  })),
+};
 
 export const metadata: Metadata = {
-  title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-  description: "Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+  title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
+  description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
+    description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. Sin costo.",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
+    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   icons: { icon: "/images/contador-gerardo-huerta-perfil.png" },
@@ -24,6 +69,14 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <a href="#contenido-principal" className="skip-link">Saltar al contenido principal</a>
 
       {/* ── HEADER ── */}
@@ -58,7 +111,7 @@ export default function LandingPage() {
               <em>puede ser mayor de lo que crees.</em>
             </h1>
             <p className="hero-sub">
-              Cuéntanos tu caso y en menos de 24 horas te decimos si tiene sentido agendar un diagnóstico completo — el pre-diagnóstico es sin costo.
+              Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo — sin costo.
             </p>
             <div className="hero-actions">
               <a href="#formulario" className="btn-cta">
@@ -234,7 +287,7 @@ export default function LandingPage() {
               <h2 id="sec-temas">Temas que revisamos en el pre-diagnóstico</h2>
             </div>
             <div className="tags-wrap" role="list" aria-label="Temas de asesoría disponibles">
-              {["Pensión IMSS", "Ley 73", "Ley 97", "Modalidad 40", "Modalidad 10", "Semanas cotizadas", "Conservación de derechos", "AFORE", "Pensiones bajas", "Planeación para el retiro", "Jubilación anticipada"].map((tag) => (
+              {["Pensión IMSS", "Ley 73", "Ley 97", "Modalidad 40", "Modalidad 10", "Semanas cotizadas", "Conservación de derechos", "AFORE", "Pensiones bajas", "Planeación para el retiro", "Jubilación anticipada", "Pensión por viudez"].map((tag) => (
                 <span key={tag} className="topic-tag" role="listitem">{tag}</span>
               ))}
             </div>
@@ -266,6 +319,7 @@ export default function LandingPage() {
                 title="El Contador Gerardo Huerta explica el pre-diagnóstico de pensión IMSS"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
+                loading="lazy"
                 className="video-shorts-iframe"
               />
             </div>

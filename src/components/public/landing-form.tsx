@@ -82,6 +82,23 @@ type Errors = Partial<Record<keyof Fields, string>>;
 
 const STEP1_FIELDS: (keyof Fields)[] = ["nombre", "telefono", "edad", "yaEstaPensionado", "situacion"];
 
+// Fields rendered as a <fieldset> of radios have no single element whose id matches
+// the field key — focus the first radio in that group by its `name` instead.
+const FIELDSET_RADIO_NAME: Partial<Record<keyof Fields, string>> = {
+  yaEstaPensionado: "pensionado",
+  tieneSemanasCotizadas: "semanas",
+};
+
+function focusFirstError(errs: Errors) {
+  const firstKey = Object.keys(errs)[0] as keyof Fields | undefined;
+  if (!firstKey) return;
+  const radioName = FIELDSET_RADIO_NAME[firstKey];
+  const el = radioName
+    ? document.querySelector<HTMLElement>(`input[name="${radioName}"]`)
+    : document.getElementById(firstKey);
+  el?.focus();
+}
+
 function validate(fields: Fields, keys: (keyof Fields)[]): Errors {
   const errs: Errors = {};
   for (const k of keys) {
@@ -178,6 +195,7 @@ export function LandingForm() {
     const errs = validate(fields, STEP1_FIELDS);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      focusFirstError(errs);
       return;
     }
     setStep(2);
@@ -199,6 +217,7 @@ export function LandingForm() {
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       setGlobalError("Por favor corrige los campos marcados antes de continuar.");
+      focusFirstError(errs);
       return;
     }
     setLoading(true);
@@ -554,6 +573,7 @@ export function LandingForm() {
               <label className="checkbox-label">
                 <input
                   type="checkbox"
+                  id="consentimiento"
                   className="checkbox-input"
                   checked={fields.consentimiento}
                   onChange={(e) => set("consentimiento", e.target.checked)}
