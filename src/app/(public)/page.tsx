@@ -49,18 +49,18 @@ const faqSchema = {
 
 export const metadata: Metadata = {
   title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-  description: "Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+  description: "Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
   robots: { index: true, follow: true },
   openGraph: {
     title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+    description: "Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas te decimos qué opciones tienes. Sin costo.",
+    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   icons: { icon: "/images/contador-gerardo-huerta-perfil.png" },
@@ -111,7 +111,7 @@ export default function LandingPage() {
               <em>puede ser mayor de lo que crees.</em>
             </h1>
             <p className="hero-sub">
-              Cuéntanos tu caso y en menos de 24 horas te decimos si tiene sentido agendar un diagnóstico completo — el pre-diagnóstico es sin costo.
+              Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo — el pre-diagnóstico es sin costo.
             </p>
             <div className="hero-actions">
               <a href="#formulario" className="btn-cta">
