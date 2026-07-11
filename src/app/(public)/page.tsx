@@ -48,18 +48,18 @@ const faqSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-  description: "Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+  title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
+  description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. El pre-diagnóstico es sin costo.",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
+    description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
     description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
@@ -287,7 +287,7 @@ export default function LandingPage() {
               <h2 id="sec-temas">Temas que revisamos en el pre-diagnóstico</h2>
             </div>
             <div className="tags-wrap" role="list" aria-label="Temas de asesoría disponibles">
-              {["Pensión IMSS", "Ley 73", "Ley 97", "Modalidad 40", "Modalidad 10", "Semanas cotizadas", "Conservación de derechos", "AFORE", "Pensiones bajas", "Planeación para el retiro", "Jubilación anticipada"].map((tag) => (
+              {["Pensión IMSS", "Ley 73", "Ley 97", "Modalidad 40", "Modalidad 10", "Semanas cotizadas", "Conservación de derechos", "AFORE", "Pensiones bajas", "Planeación para el retiro", "Jubilación anticipada", "Pensión por viudez"].map((tag) => (
                 <span key={tag} className="topic-tag" role="listitem">{tag}</span>
               ))}
             </div>
