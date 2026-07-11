@@ -17,25 +17,6 @@ export function PushSubscriber() {
   const [mostrarBanner, setMostrarBanner] = useState(false);
   const [cargando, setCargando] = useState(false);
 
-  useEffect(() => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setEstado("unsupported");
-      return;
-    }
-
-    const permission = Notification.permission;
-    if (permission === "granted") {
-      setEstado("granted");
-      registrarSW();
-    } else if (permission === "denied") {
-      setEstado("denied");
-    } else {
-      // Solo mostramos el banner si no han decidido aún
-      const ignorado = sessionStorage.getItem("push-banner-ignorado");
-      if (!ignorado) setMostrarBanner(true);
-    }
-  }, []);
-
   async function registrarSW() {
     try {
       const reg = await navigator.serviceWorker.register("/sw.js");
@@ -56,6 +37,29 @@ export function PushSubscriber() {
       // Fallo silencioso — push no es crítico
     }
   }
+
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect --
+       lee APIs solo-cliente (navigator/Notification/sessionStorage) que no existen
+       durante el SSR; no hay forma de derivar este estado en el render sin un efecto. */
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setEstado("unsupported");
+      return;
+    }
+
+    const permission = Notification.permission;
+    if (permission === "granted") {
+      setEstado("granted");
+      registrarSW();
+    } else if (permission === "denied") {
+      setEstado("denied");
+    } else {
+      // Solo mostramos el banner si no han decidido aún
+      const ignorado = sessionStorage.getItem("push-banner-ignorado");
+      if (!ignorado) setMostrarBanner(true);
+    }
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   async function activar() {
     setCargando(true);

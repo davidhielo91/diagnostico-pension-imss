@@ -70,7 +70,6 @@ export const TIPOS_ACTIVIDAD = [
 ] as const;
 
 export const ESTADOS_TERMINALES = ["Archivado"];
-export const ROLES = ["administrador", "asesor"] as const;
 
 export const PRIORIDAD_COLORS: Record<string, string> = {
   "Alta": "text-red-600 bg-red-50 border-red-200",
@@ -108,6 +107,7 @@ export const LANDING_URL = "https://pensiones.contadorgerardohuerta.com";
 export const SCORE_UMBRAL_FUERTE = 70;
 export const SCORE_UMBRAL_REVISAR = 40;
 export const PENSION_MINIMA_GARANTIZADA = 10_634;
+export const HORAS_SIN_CONTACTO_CRITICO = 24;
 
 export const ETIQUETAS_SCORE = {
   FUERTE: "Candidato fuerte",

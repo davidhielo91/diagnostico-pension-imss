@@ -334,7 +334,7 @@ export default async function DashboardPage() {
                 <Bell className={`h-5 w-5 ${kpis.seguimientosHoy > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-400"}`} />
               </div>
             </div>
-            <p className="text-[10px] text-muted mt-2">Pendientes para hoy</p>
+            <p className="text-[10px] text-muted mt-2">Pendientes para hoy o antes</p>
           </CardContent>
         </Card>
 
@@ -418,7 +418,8 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <p className="text-xs text-muted mt-0.5">
-            Candidatos fuertes (score ≥70) sin contacto, ordenados por tiempo de espera
+            Candidatos fuertes (score ≥70) sin contacto, ordenados por tiempo de espera.
+            El badge &quot;Críticos&quot; de arriba solo cuenta los que llevan más de 24h.
           </p>
         </CardHeader>
         <CardContent className="pt-0">
