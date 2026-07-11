@@ -111,7 +111,7 @@ export default function LandingPage() {
               <em>puede ser mayor de lo que crees.</em>
             </h1>
             <p className="hero-sub">
-              Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo — el pre-diagnóstico es sin costo.
+              Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo — sin costo.
             </p>
             <div className="hero-actions">
               <a href="#formulario" className="btn-cta">
