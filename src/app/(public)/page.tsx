@@ -247,6 +247,25 @@ export default function LandingPage() {
                 </article>
               ))}
             </div>
+            <div className="evidence-wrap">
+              <div className="evidence-media">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/tramite-imss-recibido.webp"
+                  alt="Solicitud de cambio de modalidad de pensión IMSS con sello oficial de recibido de la Subdelegación Juárez I; datos personales del cliente protegidos"
+                  width={1200}
+                  height={1600}
+                  loading="lazy"
+                />
+                <span className="evidence-badge">Recibido por el IMSS · Subdelegación Juárez I</span>
+              </div>
+              <div className="evidence-text">
+                <p className="eyebrow">Prueba real, no promesas</p>
+                <h3>Así se ve un trámite que ya gestionamos ante el IMSS</h3>
+                <p>Este es un caso real: encontramos que a este cliente le correspondía cambiar de modalidad de pensión — de cesantía en edad avanzada a pensión por vejez, una opción con mayor monto y sin reducción por edad que nadie le había explicado. Presentamos el trámite ante el IMSS y este es el sello oficial de recibido.</p>
+                <p className="evidence-note">Datos personales del cliente cubiertos para proteger su privacidad.</p>
+              </div>
+            </div>
           </div>
         </section>
 
