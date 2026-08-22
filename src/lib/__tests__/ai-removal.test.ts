@@ -92,4 +92,9 @@ describe("AI runtime removal guard", () => {
     expect(actionRoute).toContain('correo_enviado');
   });
 
+  it("removes AI-only hooks and tests after the server runtime is gone", async () => {
+    const removedClientPaths = ["src/hooks/use-generar-correo-ia.ts", "src/hooks/use-generar-resumen.ts", "src/lib/__tests__/ai.test.ts", "src/lib/__tests__/generar-resumen.test.ts", "src/lib/__tests__/guardrails.test.ts"];
+    await expect(Promise.all(removedClientPaths.map(exists))).resolves.toEqual([false, false, false, false, false]);
+  });
+
 });
