@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PRIORIDAD_COLORS } from "@/lib/constants";
 import {
-  format, subDays, differenceInDays, differenceInMinutes,
+  format, subDays, differenceInDays,
   startOfDay, endOfDay,
 } from "date-fns";
 import { es } from "date-fns/locale";
@@ -21,8 +21,7 @@ import {
   Bell,
   RefreshCw,
 } from "lucide-react";
-
-const TIPOS_CONTACTO = ["whatsapp_enviado", "correo_enviado"];
+import { getAverageFirstContactMinutes, getSourceStats } from "@/lib/dashboard-stats";
 
 function formatHoras(totalMinutos: number): string {
   if (totalMinutos < 60) return `${totalMinutos} min`;
@@ -47,8 +46,8 @@ async function getDashboardData() {
     categoriaRaw,
     urgentes,
     atorados,
-    contactosRaw,
-    fuenteRaw,
+    tiempoContactoMin,
+    fuenteStats,
     seguimientosHoy,
     seguimientosPendientes,
     regresaron,
@@ -108,18 +107,11 @@ async function getDashboardData() {
       },
     }),
 
-    // Tiempo promedio de primer contacto
-    prisma.leadActivity.findMany({
-      where: { tipo: { in: TIPOS_CONTACTO } },
-      orderBy: { createdAt: "asc" },
-      select: { leadId: true, createdAt: true },
-    }),
+    // SQL aggregation keeps dashboard memory bounded for large datasets.
+    getAverageFirstContactMinutes(prisma),
 
-    // Canales
-    prisma.lead.findMany({
-      where: { fuente: { not: null } },
-      select: { fuente: true, prioridad: true },
-    }),
+    // Source and priority combinations are aggregated in the database.
+    getSourceStats(prisma),
 
     // Seguimientos hoy
     prisma.lead.count({
@@ -146,29 +138,6 @@ async function getDashboardData() {
     }),
   ]);
 
-  // Tiempo promedio de primer contacto
-  const contactoLeadIds = [...new Set(contactosRaw.map((a) => a.leadId))];
-  let tiempoContactoMin: number | null = null;
-  if (contactoLeadIds.length > 0) {
-    const leadsContactados = await prisma.lead.findMany({
-      where: { id: { in: contactoLeadIds } },
-      select: { id: true, createdAt: true },
-    });
-    const createdAtMap = new Map(leadsContactados.map((l) => [l.id, l.createdAt]));
-    const primerosContactos = new Map<string, Date>();
-    for (const act of contactosRaw) {
-      if (!primerosContactos.has(act.leadId)) primerosContactos.set(act.leadId, act.createdAt);
-    }
-    const diffs: number[] = [];
-    for (const [id, contactoAt] of primerosContactos) {
-      const creado = createdAtMap.get(id);
-      if (creado) diffs.push(differenceInMinutes(contactoAt, creado));
-    }
-    if (diffs.length > 0) {
-      tiempoContactoMin = Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length);
-    }
-  }
-
   // % contactados de leads activos
   const totalActivos = sinContactar + contactados;
   const pctContactados = totalActivos > 0 ? Math.round((contactados / totalActivos) * 100) : 0;
@@ -176,21 +145,6 @@ async function getDashboardData() {
   // Prioridades → objeto
   const prioridades: Record<string, number> = { Alta: 0, Media: 0, Baja: 0 };
   for (const r of prioridadRaw) prioridades[r.prioridad] = r._count.id;
-
-  // Canales
-  const fuenteMap: Record<string, { total: number; alta: number }> = {};
-  for (const l of fuenteRaw) {
-    if (!l.fuente) continue;
-    fuenteMap[l.fuente] ??= { total: 0, alta: 0 };
-    fuenteMap[l.fuente].total++;
-    if (l.prioridad === "Alta") fuenteMap[l.fuente].alta++;
-  }
-  const fuenteStats = Object.entries(fuenteMap)
-    .map(([fuente, s]) => ({
-      fuente, ...s,
-      pctAlta: s.total > 0 ? Math.round((s.alta / s.total) * 100) : 0,
-    }))
-    .sort((a, b) => b.total - a.total);
 
   return {
     kpis: { nuevosHoy, sinContactar, candidatosCriticos, pctContactados, tiempoContactoMin, seguimientosHoy, regresaron },
