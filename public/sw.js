@@ -5,10 +5,10 @@ self.addEventListener('push', function (event) {
     body: data.body || 'Nuevo lead recibido',
     icon: '/favicon.ico',
     badge: '/favicon.ico',
-    tag: 'nuevo-lead',
+    tag: data.id ? 'nuevo-lead-' + data.id : 'nuevo-lead',
     renotify: true,
     requireInteraction: true,
-    data: { url: data.url || '/leads' },
+    data: { url: data.url || '/leads', id: data.id || null },
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });

@@ -11,15 +11,50 @@ export default async function LeadDetailPage({
 
   const lead = await prisma.lead.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      nombre: true,
+      telefono: true,
+      correo: true,
+      edad: true,
+      ciudad: true,
+      estado: true,
+      yaEstaPensionado: true,
+      temaInteres: true,
+      tieneSemanasCotizadas: true,
+      fuente: true,
+      objetivoPrincipal: true,
+      situacion: true,
+      categoria: true,
+      prioridad: true,
+      viabilidad: true,
+      estadoLead: true,
+      userId: true,
+      telefonoNormalizado: true,
+      fechaUltimoContacto: true,
+      fechaProximaAccion: true,
+      vecesRecibido: true,
+      segmentoInteres: true,
+      createdAt: true,
       asignadoA: { select: { id: true, name: true } },
       activities: {
         orderBy: { createdAt: "desc" },
-        include: { user: { select: { name: true } } },
+        select: {
+          id: true,
+          tipo: true,
+          nota: true,
+          createdAt: true,
+          user: { select: { name: true } },
+        },
       },
       notes: {
         orderBy: { createdAt: "desc" },
-        include: { user: { select: { name: true } } },
+        select: {
+          id: true,
+          contenido: true,
+          createdAt: true,
+          user: { select: { name: true } },
+        },
       },
     },
   });

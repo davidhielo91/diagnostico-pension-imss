@@ -13,12 +13,24 @@ export interface PushPayload {
   title: string;
   body: string;
   url?: string;
+  /** Lead id so the service worker can stack notifications per lead (D18). */
+  id?: string;
 }
 
-export async function enviarPushNotificacion(payload: PushPayload): Promise<void> {
+export async function enviarPushNotificacion(
+  payload: PushPayload,
+  opts: { userId?: string | null } = {}
+): Promise<void> {
   if (!vapidPublic || !vapidPrivate) return;
 
-  const subs = await prisma.pushSubscription.findMany();
+  const userId = opts.userId ?? (await prisma.user.findFirst({
+    where: { role: "administrador", active: true },
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    select: { id: true },
+  }))?.id;
+  if (!userId) return;
+
+  const subs = await prisma.pushSubscription.findMany({ where: { userId } });
   if (subs.length === 0) return;
 
   const json = JSON.stringify(payload);

@@ -75,6 +75,7 @@ type Fields = {
   objetivoPrincipal: string;
   tieneSemanasCotizadas: string;
   fuente: string;
+  website: string;
   consentimiento: boolean;
 };
 
@@ -179,6 +180,7 @@ export function LandingForm() {
     objetivoPrincipal: "",
     tieneSemanasCotizadas: "",
     fuente: "",
+    website: "",
     consentimiento: false,
   });
 
@@ -240,6 +242,7 @@ export function LandingForm() {
           tieneSemanasCotizadas: fields.tieneSemanasCotizadas,
           fuente:               FUENTE_MAP[fields.fuente] ?? fields.fuente,
           situacion:            fields.situacion.trim(),
+          website:              fields.website,
         }),
       });
 
@@ -263,6 +266,18 @@ export function LandingForm() {
   return (
     <div className="form-card" ref={formRef}>
       <form onSubmit={handleSubmit} noValidate autoComplete="on">
+        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px" }}>
+          <label htmlFor="website">Website</label>
+          <input
+            type="text"
+            id="website"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={fields.website}
+            onChange={(e) => set("website", e.target.value)}
+          />
+        </div>
         {/* Step indicator */}
         <div className="step-indicator" role="progressbar" aria-label="Progreso del formulario" aria-valuenow={step} aria-valuemin={1} aria-valuemax={2}>
           <div className="step-progress">

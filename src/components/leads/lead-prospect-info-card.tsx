@@ -1,16 +1,9 @@
 import { Mail, MapPin, User, FileText, Tag, Phone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InfoRow } from "./lead-info-row";
-import { LeadResumenIaPanel } from "./lead-resumen-ia-panel";
 import type { LeadDetailData } from "./types";
 
-export function LeadProspectInfoCard({
-  lead,
-  onError,
-}: {
-  lead: LeadDetailData;
-  onError: (msg: string) => void;
-}) {
+export function LeadProspectInfoCard({ lead }: { lead: LeadDetailData }) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -38,8 +31,6 @@ export function LeadProspectInfoCard({
             {lead.situacion}
           </p>
         </div>
-
-        <LeadResumenIaPanel leadId={lead.id} initialResumen={lead.resumenIA} onError={onError} />
       </CardContent>
     </Card>
   );

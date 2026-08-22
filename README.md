@@ -8,7 +8,6 @@ Sistema integral para el **Despacho Fiscal 2087 (Contador Gerardo Huerta)**: lan
 - **CRM interno** (`/dashboard`, `/leads`, `/leads/[id]`, `/settings`) — un solo administrador gestiona, clasifica y da seguimiento a los leads
 - **Clasificación automática** — al llegar un lead se asigna categoría, prioridad, viabilidad (score 0–100) y segmento de interés A/B/C
 - **Detección de duplicados** — mismo teléfono o correo incrementa `vecesRecibido` sin crear registro nuevo
-- **Generación de mensajes con IA** — WhatsApp y correo generados por Mistral AI con validación de voz de marca y fallback automático
 - **Notificaciones push** — browser push al llegar un lead nuevo; campana en el CRM con leads sin contactar y seguimientos vencidos
 - **Aviso de privacidad** (`/aviso-de-privacidad`) — página LFPDPPP con responsable, datos recabados, derechos ARCO e información del INAI
 
@@ -21,7 +20,6 @@ Sistema integral para el **Despacho Fiscal 2087 (Contador Gerardo Huerta)**: lan
 | Base de datos | SQLite (desarrollo) / PostgreSQL (producción) vía Prisma 5 |
 | Auth | Auth.js v5 — Credentials + JWT 8h |
 | Proxy/Middleware | `src/proxy.ts` — protege rutas del CRM |
-| IA | Mistral AI (`mistral-small-latest`) vía `fetch` nativo |
 | Email | Resend |
 | Push | Web Push API + `web-push` npm |
 | Fuentes (landing) | Google Fonts vía `next/font` — Roboto + Open Sans |
@@ -35,7 +33,7 @@ Sistema integral para el **Despacho Fiscal 2087 (Contador Gerardo Huerta)**: lan
 /login                     → Login del administrador
 /dashboard                 → KPIs, cola de prioridad, seguimientos vencidos
 /leads                     → Tabla filtrable (Activos / Archivados)
-/leads/[id]                → Detalle: clasificación, acciones, IA, notas, historial
+/leads/[id]                → Detalle: clasificación, acciones, notas, historial
 /settings                  → Info del sistema (URL landing, rate limit, versión)
 /admin                     → Redirige a /dashboard
 /pipeline                  → Redirige a /leads
@@ -45,9 +43,6 @@ Sistema integral para el **Despacho Fiscal 2087 (Contador Gerardo Huerta)**: lan
 /api/leads/[id]/update     → PATCH — actualiza un campo a la vez (allowlist)
 /api/leads/[id]/action     → POST — whatsapp_enviado / correo_enviado / archivado
 /api/leads/[id]/notes      → POST — agrega nota interna
-/api/leads/[id]/generar-mensaje  → POST — genera mensaje WhatsApp con IA
-/api/leads/[id]/generar-correo   → POST — genera correo con IA
-/api/leads/[id]/generar-resumen  → POST — genera resumen de caso (una sola vez)
 /api/leads/export          → GET — descarga leads filtrados como .xlsx
 /api/leads/import          → POST — importa .xlsx/.xls/.csv (hasta 1,000 filas)
 /api/notifications         → GET — badge y listas para la campana
@@ -118,7 +113,6 @@ Abre [http://localhost:3000](http://localhost:3000). Login con las credenciales 
 | `RESEND_API_KEY` | — | Transactional email vía Resend |
 | `RESEND_FROM_EMAIL` | — | Dirección verificada en Resend |
 | `NOTIFICATION_EMAIL` | — | Recibe alertas de nuevos leads (default: `ADMIN_EMAIL`) |
-| `MISTRAL_API_KEY` | — | Generación de mensajes WA/correo con IA |
 | `VAPID_PUBLIC_KEY` | — | Web Push (generar con `npx web-push generate-vapid-keys`) |
 | `VAPID_PRIVATE_KEY` | — | Web Push |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | — | Mismo valor que `VAPID_PUBLIC_KEY` (expuesto al browser) |
@@ -205,7 +199,6 @@ PushSubscription  (standalone, sin FK a User)
 | `telefonoNormalizado` | 10 dígitos sin prefijo 52 — usado para deduplicar y links WA |
 | `vecesRecibido` | Cuántas veces envió el formulario (no incrementa en importación) |
 | `fechaProximaAccion` | Recordatorio de seguimiento — visible en dashboard y campana |
-| `resumenIA` | Párrafo de resumen interno generado una sola vez por Mistral AI |
 
 ---
 
@@ -219,17 +212,6 @@ En `src/lib/classification.ts`, al crear un lead:
 | `prioridad` | Alta si edad > 60, invalidez o urgencia en texto |
 | `scoreViabilidad` | Reglas sobre categoría, semanas, pensión mínima garantizada ($10,634 MXN) |
 | `segmentoInteres` | A = objetivo específico + semanas o situación detallada; C = objetivo vago o descripción corta; B = resto |
-
----
-
-## Voz de marca — reglas para IA
-
-Los prompts de Mistral y las plantillas de texto siguen estas reglas (`src/lib/ai.ts`):
-
-- **Nunca prometer aumentos ni garantizar montos.** Si el output contiene frases prohibidas (e.g. "le va a subir", "va a aumentar", "aumento asegurado"), se reintenta una vez con instrucción estricta; si persiste, se devuelve una plantilla segura hardcoded.
-- **Único cierre:** invitación al Diagnóstico de Pensión IMSS con `LANDING_URL`.
-- **Trato de usted** en todo mensaje al prospecto.
-- **Viudez:** por ser pensión derivada, no aplica el mismo tipo de revisión; no generar expectativas de aumento.
 
 ---
 

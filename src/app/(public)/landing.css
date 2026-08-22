@@ -231,9 +231,25 @@
 @media (min-width: 768px) {
   .evidence-wrap { flex-direction: row; text-align: left; align-items: center; }
 }
-.evidence-media { position: relative; flex-shrink: 0; width: 100%; max-width: 340px; }
-.evidence-media img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: var(--radius-md); border: 1.5px solid var(--border-light); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.evidence-visual { display: flex; flex: 0 0 340px; flex-direction: column; align-items: center; width: 100%; max-width: 340px; }
+.evidence-media { position: relative; width: 100%; }
+.evidence-image-trigger { display: block; width: 100%; padding: 0; background: none; border: 0; border-radius: var(--radius-md); cursor: zoom-in; }
+.evidence-image-trigger img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: var(--radius-md); border: 1.5px solid var(--border-light); box-shadow: 0 8px 24px rgba(0,0,0,0.08); transition: box-shadow 0.2s ease, transform 0.2s ease; }
+.evidence-image-trigger:hover img { box-shadow: 0 12px 28px rgba(0,33,68,0.16); transform: translateY(-2px); }
 .evidence-badge { position: absolute; left: 1rem; bottom: -1rem; background: var(--navy); color: var(--text-on-dark); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: calc(100% - 2rem); }
+.evidence-expand-button { align-self: center; margin-top: 1.75rem; min-height: 44px; padding: 0.55rem 1rem; color: var(--navy); background: var(--surface-white); border: 1.5px solid var(--navy); border-radius: 50px; font: 700 0.9rem/1.2 var(--font-body); cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+.evidence-expand-button:hover { background: var(--navy); color: var(--text-on-dark); }
+.evidence-lightbox { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgba(0, 26, 53, 0.78); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.evidence-lightbox-dialog { width: min(100%, 900px); max-height: calc(100dvh - 2rem); overflow: auto; background: var(--surface-white); border: 1px solid rgba(255,255,255,0.24); border-radius: var(--radius-lg); box-shadow: 0 24px 70px rgba(0, 18, 39, 0.46); }
+.evidence-lightbox-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.25rem 0.5rem; }
+.evidence-lightbox-kicker { margin: 0 0 0.25rem; color: var(--gold-text-on-light); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.landing-root .evidence-lightbox h2 { margin: 0; color: var(--navy); font-size: clamp(1.15rem, 3vw, 1.5rem); }
+.evidence-lightbox-close { display: grid; flex: 0 0 44px; width: 44px; height: 44px; place-items: center; padding: 0; color: var(--navy); background: var(--surface-light); border: 1px solid var(--border-mid); border-radius: 50%; cursor: pointer; }
+.evidence-lightbox-close:hover { background: var(--gold-pale); border-color: var(--gold); }
+.evidence-lightbox-close svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 2.25; }
+.evidence-lightbox-description { margin: 0; padding: 0 1.25rem 1rem; color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; }
+.evidence-lightbox-image-wrap { padding: 0 1.25rem 1.25rem; }
+.evidence-lightbox-image-wrap img { width: auto; max-width: 100%; max-height: calc(100dvh - 12rem); margin: 0 auto; border: 1px solid var(--border-light); border-radius: var(--radius-sm); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 .evidence-text { flex: 1; }
 .landing-root .evidence-text h3 { color: var(--navy); margin-bottom: 0.6rem; }
 .landing-root .evidence-text p { color: var(--text-secondary); font-size: 0.97rem; line-height: 1.65; }
@@ -374,6 +390,11 @@
     from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidence-image-trigger img, .evidence-expand-button { transition: none; }
+  .evidence-image-trigger:hover img { transform: none; }
 }
 
 @media (max-width: 640px) {

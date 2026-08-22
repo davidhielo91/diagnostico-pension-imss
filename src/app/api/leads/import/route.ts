@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { crearLeadConClasificacion } from "@/lib/classification";
+import { type LeadInput } from "@/lib/classification";
+import { importLeadsInBatches, MAX_IMPORT_ROWS, type LeadImportClient } from "@/lib/lead-import";
+import { prisma } from "@/lib/prisma";
 import * as XLSX from "xlsx";
 
 const COLUMN_ALIASES: Record<string, string> = {
@@ -144,7 +146,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "El archivo no contiene datos" }, { status: 400 });
   }
 
-  if (rawData.length > 1000) {
+  if (rawData.length > MAX_IMPORT_ROWS) {
     return NextResponse.json({ error: "El archivo no puede tener más de 1,000 filas por importación" }, { status: 400 });
   }
 
@@ -165,8 +167,7 @@ export async function POST(request: NextRequest) {
   }
 
   const errors: { fila: number; error: string }[] = [];
-  let creados = 0;
-  let duplicados = 0;
+  const validInputs: LeadInput[] = [];
 
   for (let i = 0; i < rawData.length; i++) {
     const row = rawData[i];
@@ -191,7 +192,7 @@ export async function POST(request: NextRequest) {
         ? parseFecha(row[columnMap.fechaCreacion])
         : undefined;
 
-      const { esDuplicado } = await crearLeadConClasificacion({
+      validInputs.push({
         nombre: String(row[columnMap.nombre] ?? "").trim(),
         telefono: limpiarTelefono(row[columnMap.telefono]),
         correo: String(row[columnMap.correo] ?? "").trim() || undefined,
@@ -205,13 +206,18 @@ export async function POST(request: NextRequest) {
         objetivoPrincipal: String(row[columnMap.objetivoPrincipal] ?? "").trim() || undefined,
         situacion: String(row[columnMap.situacion] ?? "").trim(),
         createdAt: fechaCreacion,
-      }, { enviarNotificacion: false, saltarDuplicados: true });
-
-      if (esDuplicado) duplicados++;
-      else creados++;
+      });
     } catch (err) {
       errors.push({ fila, error: err instanceof Error ? err.message : "Error desconocido" });
     }
+  }
+
+  let creados = 0;
+  let duplicados = 0;
+  try {
+    ({ creados, duplicados } = await importLeadsInBatches(validInputs, prisma as unknown as LeadImportClient));
+  } catch (err) {
+    errors.push({ fila: 0, error: err instanceof Error ? err.message : "Error desconocido" });
   }
 
   return NextResponse.json({

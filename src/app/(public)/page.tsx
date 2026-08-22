@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LandingForm } from "@/components/public/landing-form";
 import { LandingFAQ } from "@/components/public/landing-faq";
+import { EvidenceImageLightbox } from "@/components/public/evidence-image-lightbox";
 import { LANDING_FAQS } from "@/lib/landing-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://pre-diagnostico.contadorgerardohuerta.com";
@@ -48,19 +49,19 @@ const faqSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
-  description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
+  title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
+  description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
-    description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
+    description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico Gratis",
-    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes. Sin costo.",
+    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
+    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   icons: { icon: "/images/contador-gerardo-huerta-perfil.png" },
@@ -100,18 +101,18 @@ export default function LandingPage() {
             <div className="hero-lines" />
           </div>
           <div className="container hero-content">
-            <div className="hero-badge" aria-label="Servicio gratuito">
+            <div className="hero-badge" aria-label="Servicio de pre-diagnóstico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-              Pre-diagnóstico sin costo
+              Pre-diagnóstico
             </div>
             <h1 id="hero-titulo">
               Tu pensión del IMSS<br />
               <em>puede ser mayor de lo que crees.</em>
             </h1>
             <p className="hero-sub">
-              Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo — sin costo.
+              Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo.
             </p>
             <div className="hero-actions">
               <a href="#formulario" className="btn-cta">
@@ -143,7 +144,7 @@ export default function LandingPage() {
               </li>
               <li className="trust-item">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-                <span>Pre-diagnóstico sin costo</span>
+                <span>Primer paso sin compromiso</span>
               </li>
             </ul>
           </div>
@@ -248,17 +249,7 @@ export default function LandingPage() {
               ))}
             </div>
             <div className="evidence-wrap">
-              <div className="evidence-media">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/tramite-imss-recibido.webp"
-                  alt="Solicitud de cambio de modalidad de pensión IMSS con sello oficial de recibido de la Subdelegación Juárez I; datos personales del cliente protegidos"
-                  width={1200}
-                  height={1600}
-                  loading="lazy"
-                />
-                <span className="evidence-badge">Recibido por el IMSS · Subdelegación Juárez I</span>
-              </div>
+              <EvidenceImageLightbox />
               <div className="evidence-text">
                 <p className="eyebrow">Prueba real, no promesas</p>
                 <h3>Así se ve un trámite que ya gestionamos ante el IMSS</h3>
@@ -278,7 +269,7 @@ export default function LandingPage() {
             </div>
             <ol className="steps-list" role="list">
               {[
-                { n: 1, t: "Revisamos tu caso — sin costo", d: "Nuestro equipo analiza los datos que nos compartes para entender tu situación e identificar si existe algo concreto que valga la pena revisar a fondo." },
+                { n: 1, t: "Revisamos tu caso", d: "Nuestro equipo analiza los datos que nos compartes para entender tu situación e identificar si existe algo concreto que valga la pena revisar a fondo." },
                 { n: 2, t: "Te contactamos por correo o WhatsApp", d: "En máximo 24 horas hábiles te escribimos con nuestra conclusión. Si encontramos opciones para tu caso, te lo hacemos saber. Si no hay nada que revisar, también te lo decimos directo." },
                 { n: 3, t: "Si hay opciones, te invitamos a agendar el diagnóstico completo", d: "El Diagnóstico de Pensión IMSS es una cita a fondo donde se revisan tus documentos, se hace la proyección y se define la estrategia. Este servicio tiene un costo que podrás consultar al momento de agendar." },
               ].map(({ n, t, d }) => (
@@ -357,9 +348,9 @@ export default function LandingPage() {
         <section className="section section-form" id="formulario" aria-labelledby="sec-form">
           <div className="container">
             <div className="section-header">
-              <p className="eyebrow">Pre-diagnóstico sin costo</p>
+              <p className="eyebrow">Pre-diagnóstico</p>
               <h2 id="sec-form">Cuéntanos tu situación</h2>
-              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso para decirte si tiene sentido agendar un diagnóstico completo. El pre-diagnóstico es gratuito.</p>
+              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso para decirte si tiene sentido agendar un diagnóstico completo.</p>
             </div>
             <LandingForm />
           </div>
@@ -399,7 +390,7 @@ export default function LandingPage() {
           </nav>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Despacho Fiscal 2087 · Todos los derechos reservados</p>
+          <p>© {new Date().getFullYear()} Despacho Fiscal 2087 · Todos los derechos reservados</p>
         </div>
       </footer>
     </>

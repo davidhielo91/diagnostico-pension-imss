@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
 
   await prisma.pushSubscription.upsert({
     where: { endpoint },
-    create: { endpoint, p256dh: keys.p256dh, auth: keys.auth },
-    update: { p256dh: keys.p256dh, auth: keys.auth },
+    create: { endpoint, p256dh: keys.p256dh, auth: keys.auth, userId: session.user.id },
+    update: { p256dh: keys.p256dh, auth: keys.auth, userId: session.user.id },
   });
 
   return NextResponse.json({ ok: true });
@@ -37,7 +37,7 @@ export async function DELETE(request: NextRequest) {
   const { endpoint } = body as { endpoint: string };
 
   if (endpoint) {
-    await prisma.pushSubscription.delete({ where: { endpoint } }).catch(() => {});
+    await prisma.pushSubscription.deleteMany({ where: { endpoint, userId: session.user.id } });
   }
 
   return NextResponse.json({ ok: true });

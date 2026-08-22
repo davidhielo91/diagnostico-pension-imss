@@ -80,7 +80,7 @@ export default function GraciasPage() {
           </nav>
         </div>
         <div className="footer-bottom">
-          <p>© 2025 Despacho Fiscal 2087 · Todos los derechos reservados</p>
+          <p>© {new Date().getFullYear()} Despacho Fiscal 2087 · Todos los derechos reservados</p>
         </div>
       </footer>
     </>

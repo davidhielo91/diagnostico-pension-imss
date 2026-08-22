@@ -40,7 +40,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
         {/* ── Main column ── */}
         <div className="lg:col-span-2 space-y-5">
-          <LeadProspectInfoCard lead={lead} onError={showError} />
+          <LeadProspectInfoCard lead={lead} />
           <LeadActivityTimeline activities={lead.activities} />
           <LeadNotesCard lead={lead} onError={showError} />
         </div>
