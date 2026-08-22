@@ -66,6 +66,39 @@ describe("PATCH /api/leads/[id]/update — categorical validation", () => {
     }));
   });
 
+  it("re-scores a manual category from the persisted duplicate submission facts", async () => {
+    prismaMock.lead.findUnique.mockResolvedValue({
+      id: "lead-1",
+      nombre: "Juan Pérez",
+      telefono: "5512345678",
+      correo: "juan@example.com",
+      edad: 61,
+      ciudad: "Ciudad Juárez",
+      estado: null,
+      yaEstaPensionado: "no",
+      temaInteres: "otro tema",
+      tieneSemanasCotizadas: "no",
+      fuente: "Google",
+      objetivoPrincipal: "No estoy seguro",
+      situacion: "tengo invalidez desde hace tres años",
+      categoria: "Invalidez",
+      prioridad: "Alta",
+      viabilidad: "Recomendar diagnóstico",
+      estadoLead: "Nuevo",
+    });
+
+    const response = await PATCH(request({ categoria: "Ley 73" }), routeParams);
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.lead.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        categoria: "Ley 73",
+        scoreViabilidad: 40,
+        etiquetaViabilidad: "Revisar",
+      }),
+    }));
+  });
+
   it.each([null, { id: "inactive-user", active: false }])("rejects assignment to a missing or inactive user", async (user) => {
     prismaMock.user.findUnique.mockResolvedValue(user);
 

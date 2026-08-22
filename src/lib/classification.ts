@@ -274,9 +274,8 @@ export interface ClasificacionRecalculada {
 }
 
 /**
- * D14: recomputes every classification field from the FRESH input so a
- * duplicate resubmission refreshes stale categoria/prioridad/viabilidad,
- * segmentoInteres and the score pair instead of keeping the old values.
+ * Duplicate resubmissions use the latest public form as the source of truth
+ * for every persisted fact that feeds automatic classification and scoring.
  */
 export function recalcularClasificacion(input: LeadInput): ClasificacionRecalculada {
   const clasificacion = clasificarLead(input);
@@ -319,6 +318,14 @@ async function manejarLeadDuplicado(
     where: { id: existente.id },
     data: {
       vecesRecibido: { increment: 1 },
+      // Keep every persisted classification fact in this same update aligned
+      // with the fresh input used to derive the fields below. Manual category
+      // changes subsequently score from these stored facts.
+      edad: input.edad,
+      yaEstaPensionado: input.yaEstaPensionado,
+      temaInteres: input.temaInteres,
+      tieneSemanasCotizadas: input.tieneSemanasCotizadas || null,
+      objetivoPrincipal: input.objetivoPrincipal || null,
       situacion: input.situacion,
       fuente: input.fuente ?? existente.fuente,
       categoria: recalculada.categoria,
