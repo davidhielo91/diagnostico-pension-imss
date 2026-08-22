@@ -1,5 +1,4 @@
-import { describe, expect, it } from "vitest";
-import nextConfig from "../../../next.config";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 type HeaderRule = {
   source: string;
@@ -7,12 +6,23 @@ type HeaderRule = {
   has?: Array<{ type: string; key: string; value?: string }>;
 };
 
-async function getHeaderRules(): Promise<HeaderRule[]> {
+async function getHeaderRules(nodeEnv?: string): Promise<HeaderRule[]> {
+  if (nodeEnv) {
+    vi.stubEnv("NODE_ENV", nodeEnv);
+  }
+
+  vi.resetModules();
+  const { default: nextConfig } = await import("../../../next.config");
   const headers = await nextConfig.headers?.();
   return (headers ?? []) as HeaderRule[];
 }
 
 describe("security response headers", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
   it("adds a CSP policy to all routes", async () => {
     const rules = await getHeaderRules();
     const defaultRule = rules.find((rule) => rule.source === "/(.*)");
@@ -38,5 +48,19 @@ describe("security response headers", () => {
     expect(hstsRule?.has).toEqual([
       { type: "header", key: "x-forwarded-proto", value: "https" },
     ]);
+  });
+
+  it("allows unsafe eval only in development CSP", async () => {
+    const developmentRules = await getHeaderRules("development");
+    const productionRules = await getHeaderRules("production");
+    const developmentCsp = developmentRules[0]?.headers.find(
+      (header) => header.key === "Content-Security-Policy"
+    );
+    const productionCsp = productionRules[0]?.headers.find(
+      (header) => header.key === "Content-Security-Policy"
+    );
+
+    expect(developmentCsp?.value).toContain("'unsafe-eval'");
+    expect(productionCsp?.value).not.toContain("'unsafe-eval'");
   });
 });
