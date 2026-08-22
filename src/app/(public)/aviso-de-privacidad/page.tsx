@@ -181,11 +181,6 @@ export default function AvisoPrivacidadPage() {
                 <strong>Resend</strong> — servicio de envío de correos transaccionales. Solo
                 recibe la dirección de correo y el contenido del mensaje de confirmación.
               </li>
-              <li>
-                <strong>Mistral AI</strong> — servicio de inteligencia artificial utilizado
-                internamente para redactar mensajes de seguimiento. Procesa datos de forma
-                transitoria sin almacenamiento permanente.
-              </li>
             </ul>
           </section>
 

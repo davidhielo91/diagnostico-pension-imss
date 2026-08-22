@@ -98,3 +98,30 @@ describe("AI runtime removal guard", () => {
   });
 
 });
+
+describe("AI disclosure removal guard", () => {
+  it("keeps README documentation free of former provider, AI, and WhatsApp generation claims", async () => {
+    const readme = await source("README.md");
+
+    expect(readme).not.toMatch(/mistral/i);
+    expect(readme).not.toMatch(/\bIA\b/);
+    expect(readme).not.toMatch(/generar-(mensaje|correo|resumen)/);
+    expect(readme).not.toContain("resumenIA");
+  });
+
+  it("removes the former provider disclosure while retaining the Resend disclosure", async () => {
+    const privacyNotice = await source("src/app/(public)/aviso-de-privacidad/page.tsx");
+
+    expect(privacyNotice).not.toMatch(/mistral/i);
+    expect(privacyNotice).not.toMatch(/inteligencia artificial/i);
+    expect(privacyNotice).toContain("<strong>Resend</strong>");
+    expect(privacyNotice).toContain("correos transaccionales");
+  });
+
+  it("keeps checked-in environment configuration free of the retired provider credential", async () => {
+    const environmentExample = await source(".env.example");
+
+    expect(environmentExample).not.toContain("MISTRAL_API_KEY");
+    expect(environmentExample).toContain("RESEND_API_KEY");
+  });
+});
