@@ -31,8 +31,13 @@ describe("security response headers", () => {
     );
 
     expect(csp?.value).toContain("default-src 'self'");
+    expect(csp?.value).toContain(
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com"
+    );
+    expect(csp?.value).toContain("base-uri 'self'");
     expect(csp?.value).toContain("object-src 'none'");
     expect(csp?.value).toContain("frame-ancestors 'self'");
+    expect(csp?.value).toContain("form-action 'self'");
   });
 
   it("sends HSTS only for requests forwarded as HTTPS", async () => {
