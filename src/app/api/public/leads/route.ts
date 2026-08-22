@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
         body: `${lead.nombre} · ${lead.temaInteres} · ${lead.ciudad}`,
         url: `/leads/${lead.id}`,
         id: lead.id,
-      }).catch(() => {});
+      }, { userId: lead.userId }).catch(() => {});
     }
 
     return NextResponse.json(

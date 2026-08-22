@@ -59,7 +59,7 @@ describe("POST /api/public/leads — push payload carries the lead id", () => {
 
   it("sends a push payload with id when a new lead is created", async () => {
     (crearLeadConClasificacion as ReturnType<typeof vi.fn>).mockResolvedValue({
-      lead: { id: "lead-abc", prioridad: "Alta", nombre: "Juan Pérez", temaInteres: "Ley 73", ciudad: "Cd. Juárez" },
+      lead: { id: "lead-abc", prioridad: "Alta", nombre: "Juan Pérez", temaInteres: "Ley 73", ciudad: "Cd. Juárez", userId: "admin-1" },
       esDuplicado: false,
     });
 
@@ -74,7 +74,8 @@ describe("POST /api/public/leads — push payload carries the lead id", () => {
     expect(res.status).toBe(201);
     expect(enviarPushNotificacion).toHaveBeenCalledTimes(1);
     expect(enviarPushNotificacion).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "lead-abc", url: "/leads/lead-abc" })
+      expect.objectContaining({ id: "lead-abc", url: "/leads/lead-abc" }),
+      { userId: "admin-1" }
     );
   });
 

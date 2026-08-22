@@ -21,6 +21,7 @@ model User {
   activities      LeadActivity[]
   statusHistories LeadStatusHistory[]
   notes           LeadNote[]
+  pushSubscriptions PushSubscription[]
 }
 
 model Lead {
@@ -77,6 +78,8 @@ model LeadActivity {
 
   lead Lead  @relation(fields: [leadId], references: [id])
   user User? @relation(fields: [userId], references: [id])
+
+  @@index([leadId])
 }
 
 model LeadStatusHistory {
@@ -89,6 +92,8 @@ model LeadStatusHistory {
 
   lead Lead  @relation(fields: [leadId], references: [id])
   user User? @relation(fields: [userId], references: [id])
+
+  @@index([leadId])
 }
 
 model LeadNote {
@@ -100,6 +105,8 @@ model LeadNote {
 
   lead Lead  @relation(fields: [leadId], references: [id])
   user User? @relation(fields: [userId], references: [id])
+
+  @@index([leadId])
 }
 
 model PushSubscription {
@@ -107,5 +114,10 @@ model PushSubscription {
   endpoint  String   @unique
   p256dh    String
   auth      String
+  userId    String?
   createdAt DateTime @default(now())
+
+  subscriber User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
