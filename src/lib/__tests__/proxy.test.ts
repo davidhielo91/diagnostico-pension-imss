@@ -5,11 +5,20 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 import { proxy, config } from "@/proxy";
+import { credentialLoginRateLimiter } from "@/lib/rate-limit";
 
 const { auth } = await import("@/lib/auth");
 
 function req(path: string): Request {
   return new Request(`https://example.com${path}`);
+}
+
+function loginRequest(email = "admin@example.com"): Request {
+  return new Request("https://example.com/api/auth/callback/credentials", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "x-real-ip": "203.0.113.10" },
+    body: new URLSearchParams({ email, password: "wrong" }),
+  });
 }
 
 describe("proxy — /sw.js passthrough (D19)", () => {
@@ -43,5 +52,16 @@ describe("proxy — /sw.js passthrough (D19)", () => {
     expect(new RegExp(matcher).test("/sw.js?x=1")).toBe(false);
     expect(new RegExp(matcher).test("/dashboard")).toBe(true);
     expect(new RegExp(matcher).test("/leads")).toBe(true);
+  });
+
+  it("returns a generic 429 response for a locked credential pair", async () => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      credentialLoginRateLimiter.recordFailure({ email: "admin@example.com", ip: "203.0.113.10" });
+    }
+
+    const response = await proxy(loginRequest());
+
+    expect(response?.status).toBe(429);
+    expect(await response?.json()).toEqual({ error: "Unable to sign in. Please try again later." });
   });
 });
