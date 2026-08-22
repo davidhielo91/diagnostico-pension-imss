@@ -92,6 +92,7 @@ describe("crearLeadConClasificacion duplicate path — stores refreshed classifi
   it("updates the existing lead with the newly computed classification fields", async () => {
     await crearLeadConClasificacion(
       input({
+        edad: 61,
         yaEstaPensionado: "no",
         temaInteres: "otro tema",
         objetivoPrincipal: "No estoy seguro",
@@ -106,9 +107,30 @@ describe("crearLeadConClasificacion duplicate path — stores refreshed classifi
     expect(data.categoria).toBe("Invalidez");
     expect(data.prioridad).toBe("Alta");
     expect(data.segmentoInteres).toBe("C");
+    // The duplicate policy makes this form the source of truth for every fact
+    // that the duplicate classification and later manual re-score consume.
+    expect(data.edad).toBe(61);
+    expect(data.yaEstaPensionado).toBe("no");
+    expect(data.temaInteres).toBe("otro tema");
+    expect(data.tieneSemanasCotizadas).toBe("no");
+    expect(data.objetivoPrincipal).toBe("No estoy seguro");
     expect(data.situacion).toBe("tengo invalidez desde hace tres años");
-    expect(typeof data.scoreViabilidad).toBe("number");
-    expect(typeof data.etiquetaViabilidad).toBe("string");
+    expect(data.scoreViabilidad).toBe(10);
+    expect(data.etiquetaViabilidad).toBe("Baja viabilidad");
+  });
+
+  it("clears optional classification facts with the duplicate-derived fields", async () => {
+    await crearLeadConClasificacion(
+      input({
+        tieneSemanasCotizadas: undefined,
+        objetivoPrincipal: undefined,
+      }),
+      { enviarNotificacion: false }
+    );
+
+    const data = prismaMock.lead.update.mock.calls[0][0].data;
+    expect(data.tieneSemanasCotizadas).toBeNull();
+    expect(data.objetivoPrincipal).toBeNull();
   });
 
   it("keeps incrementing vecesRecibido on resubmission", async () => {
