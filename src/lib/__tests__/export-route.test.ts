@@ -94,6 +94,34 @@ describe("GET /api/leads/export — XLSX formula injection sanitization", () => 
     expect(rows[0].Situación).toBe("Tengo 500 semanas.");
   });
 
+  it("limits each export page and exposes a cursor for the next page", async () => {
+    (prisma.lead.findMany as ReturnType<typeof vi.fn>).mockResolvedValue(
+      Array.from({ length: 1000 }, (_, index) => lead({ id: `lead-${index}` }))
+    );
+
+    const res = await GET(new NextRequest("https://example.com/api/leads/export"));
+
+    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      take: 1000,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    }));
+    expect(res.headers.get("X-Next-Cursor")).toBe("lead-999");
+  });
+
+  it("continues an export from the requested cursor", async () => {
+    (prisma.lead.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      lead({ id: "lead-old" }),
+    ]);
+
+    await GET(new NextRequest("https://example.com/api/leads/export?cursor=lead-middle"));
+
+    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      cursor: { id: "lead-middle" },
+      skip: 1,
+      take: 1000,
+    }));
+  });
+
   it("returns 401 when there is no session", async () => {
     (auth as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const res = await GET(new NextRequest("https://example.com/api/leads/export"));

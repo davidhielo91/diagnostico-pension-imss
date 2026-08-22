@@ -26,10 +26,13 @@ export async function GET(request: NextRequest) {
     ];
   }
 
+  const cursor = searchParams.get("cursor");
   const leads = await prisma.lead.findMany({
     where: filters,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     include: { asignadoA: { select: { name: true } } },
+    take: 1000,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
   });
 
   const rows = leads.map((lead) => {
@@ -82,6 +85,7 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="${filename}"`,
+      ...(leads.length === 1000 ? { "X-Next-Cursor": leads[leads.length - 1].id } : {}),
     },
   });
 }
