@@ -3,7 +3,15 @@ import { auth } from "@/lib/auth";
 import { type LeadInput } from "@/lib/classification";
 import { importLeadsInBatches, MAX_IMPORT_ROWS, type LeadImportClient } from "@/lib/lead-import";
 import { prisma } from "@/lib/prisma";
+import { FUENTES, OBJETIVOS_PRINCIPALES, TEMAS_INTERES } from "@/lib/constants";
 import * as XLSX from "xlsx";
+
+const REQUIRED_ROW_FIELDS = ["nombre", "telefono", "edad", "ciudad", "yaEstaPensionado", "temaInteres", "situacion"] as const;
+const BOOLEAN_VALUES = ["si", "no", "no_sé"] as const;
+
+function isAllowedValue(value: string, allowedValues: readonly string[]): boolean {
+  return allowedValues.includes(value);
+}
 
 const COLUMN_ALIASES: Record<string, string> = {
   nombre: "nombre",
@@ -157,8 +165,7 @@ export async function POST(request: NextRequest) {
     if (mapped) columnMap[mapped] = h;
   }
 
-  const required = ["nombre", "telefono", "edad", "ciudad", "yaEstaPensionado", "temaInteres", "situacion"];
-  const missing = required.filter((r) => !columnMap[r]);
+  const missing = REQUIRED_ROW_FIELDS.filter((r) => !columnMap[r]);
   if (missing.length > 0) {
     return NextResponse.json({
       error: `No se encontraron las columnas necesarias: ${missing.join(", ")}`,
@@ -174,37 +181,78 @@ export async function POST(request: NextRequest) {
     const fila = i + 2;
 
     try {
-      const edad = parseInt(String(row[columnMap.edad] ?? ""), 10);
+      const nombre = String(row[columnMap.nombre] ?? "").trim();
+      const telefono = limpiarTelefono(row[columnMap.telefono]);
+      const ciudad = String(row[columnMap.ciudad] ?? "").trim();
+      const temaInteres = String(row[columnMap.temaInteres] ?? "").trim();
+      const situacion = String(row[columnMap.situacion] ?? "").trim();
+      const requiredValues = {
+        nombre,
+        telefono,
+        edad: String(row[columnMap.edad] ?? "").trim(),
+        ciudad,
+        yaEstaPensionado: String(row[columnMap.yaEstaPensionado] ?? "").trim(),
+        temaInteres,
+        situacion,
+      };
+      const missingValue = Object.entries(requiredValues).find(([, value]) => !value)?.[0];
+      if (missingValue) {
+        errors.push({ fila, error: `${missingValue} is required` });
+        continue;
+      }
+
+      const edad = parseInt(String(row[columnMap.edad] ?? "").trim(), 10);
       if (isNaN(edad) || edad < 18 || edad > 120) {
-        errors.push({ fila, error: `Edad inválida: "${row[columnMap.edad]}"` });
+        errors.push({ fila, error: "edad must be between 18 and 120" });
         continue;
       }
 
       const yaEstaPensionado = parseBooleanish(row[columnMap.yaEstaPensionado]);
-      if (!yaEstaPensionado || !["si", "no", "no_sé"].includes(yaEstaPensionado)) {
-        errors.push({ fila, error: `yaEstaPensionado inválido: "${row[columnMap.yaEstaPensionado]}"` });
+      if (!yaEstaPensionado || !isAllowedValue(yaEstaPensionado, BOOLEAN_VALUES)) {
+        errors.push({ fila, error: "yaEstaPensionado must be si, no, or no_sé" });
         continue;
       }
 
       const semanas = parseBooleanish(row[columnMap.tieneSemanasCotizadas]);
+      if (semanas && !isAllowedValue(semanas, BOOLEAN_VALUES)) {
+        errors.push({ fila, error: "tieneSemanasCotizadas must be si, no, or no_sé" });
+        continue;
+      }
+
+      if (!isAllowedValue(temaInteres, TEMAS_INTERES)) {
+        errors.push({ fila, error: "temaInteres must be a supported interest topic" });
+        continue;
+      }
+
+      const fuente = String(row[columnMap.fuente] ?? "").trim() || undefined;
+      if (fuente && !isAllowedValue(fuente, FUENTES)) {
+        errors.push({ fila, error: "fuente must be a supported source" });
+        continue;
+      }
+
+      const objetivoPrincipal = String(row[columnMap.objetivoPrincipal] ?? "").trim() || undefined;
+      if (objetivoPrincipal && !isAllowedValue(objetivoPrincipal, OBJETIVOS_PRINCIPALES)) {
+        errors.push({ fila, error: "objetivoPrincipal must be a supported primary objective" });
+        continue;
+      }
 
       const fechaCreacion = columnMap.fechaCreacion
         ? parseFecha(row[columnMap.fechaCreacion])
         : undefined;
 
       validInputs.push({
-        nombre: String(row[columnMap.nombre] ?? "").trim(),
-        telefono: limpiarTelefono(row[columnMap.telefono]),
+        nombre,
+        telefono,
         correo: String(row[columnMap.correo] ?? "").trim() || undefined,
         edad,
-        ciudad: String(row[columnMap.ciudad] ?? "").trim(),
+        ciudad,
         estado: String(row[columnMap.estado] ?? "").trim() || undefined,
         yaEstaPensionado,
-        temaInteres: String(row[columnMap.temaInteres] ?? "").trim(),
+        temaInteres,
         tieneSemanasCotizadas: semanas,
-        fuente: String(row[columnMap.fuente] ?? "").trim() || undefined,
-        objetivoPrincipal: String(row[columnMap.objetivoPrincipal] ?? "").trim() || undefined,
-        situacion: String(row[columnMap.situacion] ?? "").trim(),
+        fuente,
+        objetivoPrincipal,
+        situacion,
         createdAt: fechaCreacion,
       });
     } catch (err) {
