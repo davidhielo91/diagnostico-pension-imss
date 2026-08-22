@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LandingForm } from "@/components/public/landing-form";
 import { LandingFAQ } from "@/components/public/landing-faq";
+import { EvidenceImageLightbox } from "@/components/public/evidence-image-lightbox";
 import { LANDING_FAQS } from "@/lib/landing-content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://pre-diagnostico.contadorgerardohuerta.com";
@@ -248,17 +249,7 @@ export default function LandingPage() {
               ))}
             </div>
             <div className="evidence-wrap">
-              <div className="evidence-media">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/tramite-imss-recibido.webp"
-                  alt="Solicitud de cambio de modalidad de pensión IMSS con sello oficial de recibido de la Subdelegación Juárez I; datos personales del cliente protegidos"
-                  width={1200}
-                  height={1600}
-                  loading="lazy"
-                />
-                <span className="evidence-badge">Recibido por el IMSS · Subdelegación Juárez I</span>
-              </div>
+              <EvidenceImageLightbox />
               <div className="evidence-text">
                 <p className="eyebrow">Prueba real, no promesas</p>
                 <h3>Así se ve un trámite que ya gestionamos ante el IMSS</h3>
