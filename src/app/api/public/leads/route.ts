@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
         title: `Nuevo lead · ${lead.prioridad} prioridad`,
         body: `${lead.nombre} · ${lead.temaInteres} · ${lead.ciudad}`,
         url: `/leads/${lead.id}`,
+        id: lead.id,
       }).catch(() => {});
     }
 

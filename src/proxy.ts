@@ -8,6 +8,7 @@ export async function proxy(request: Request) {
     pathname === "/" ||
     pathname === "/gracias" ||
     pathname === "/aviso-de-privacidad" ||
+    pathname === "/sw.js" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/public");
@@ -24,5 +25,5 @@ export async function proxy(request: Request) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images/).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images/|sw.js).*)"],
 };

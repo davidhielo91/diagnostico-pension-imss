@@ -13,6 +13,8 @@ export interface PushPayload {
   title: string;
   body: string;
   url?: string;
+  /** Lead id so the service worker can stack notifications per lead (D18). */
+  id?: string;
 }
 
 export async function enviarPushNotificacion(payload: PushPayload): Promise<void> {
