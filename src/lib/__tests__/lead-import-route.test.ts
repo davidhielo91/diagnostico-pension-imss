@@ -26,6 +26,17 @@ const validRow = {
   situacion: "Quiero revisar si puedo pensionarme este año.",
 };
 
+const compatibilityTopics = [
+  "Ya estoy pensionado / Pensión baja",
+  "Otro",
+  "Saber cuánto me tocaría de pensión",
+  "Ya estoy pensionado",
+  "Semanas cotizadas",
+  "Saber cuánto le tocaría",
+  "AFORE",
+  "Conservación de derechos",
+];
+
 function request(rows: Record<string, unknown>[]) {
   const worksheet = XLSX.utils.json_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
@@ -79,6 +90,24 @@ describe("POST /api/leads/import — row validation", () => {
     expect(body).toMatchObject({ procesados: 1, creados: 1, duplicados: 0, errores: 0 });
     expect(importLeadsInBatches).toHaveBeenCalledWith([
       expect.objectContaining({ temaInteres: "Ley 73", fuente: "Google", objetivoPrincipal: "Saber si ya me puedo pensionar" }),
+    ], expect.anything());
+  });
+
+  it.each(compatibilityTopics)("preserves the compatibility topic %s", async (tema) => {
+    const response = await POST(request([{ ...validRow, tema }]));
+
+    expect(response.status).toBe(200);
+    expect(importLeadsInBatches).toHaveBeenCalledWith([
+      expect.objectContaining({ temaInteres: tema }),
+    ], expect.anything());
+  });
+
+  it.each(["no_seguro", "no_se"])("normalizes the legacy weeks value %s to no_sé", async (semanas) => {
+    const response = await POST(request([{ ...validRow, semanas }]));
+
+    expect(response.status).toBe(200);
+    expect(importLeadsInBatches).toHaveBeenCalledWith([
+      expect.objectContaining({ tieneSemanasCotizadas: "no_sé" }),
     ], expect.anything());
   });
 });

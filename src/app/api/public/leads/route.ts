@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { crearLeadConClasificacion } from "@/lib/classification";
+import {
+  TEMAS_INTERES,
+  VALORES_SEMANAS_COTIZADAS,
+  normalizarSemanasCotizadas,
+} from "@/lib/constants";
 import { enviarPushNotificacion } from "@/lib/push";
 import { getTrustedRequestIp } from "@/lib/request-ip";
 
@@ -87,11 +92,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!/^(si|no|no_sé|no_se)$/i.test(body.yaEstaPensionado as string)) {
+  if (!VALORES_SEMANAS_COTIZADAS.includes(body.yaEstaPensionado as typeof VALORES_SEMANAS_COTIZADAS[number])) {
     return NextResponse.json(
       { error: "yaEstaPensionado debe ser 'si', 'no' o 'no sé'" },
       { status: 400 }
     );
+  }
+
+  if (!TEMAS_INTERES.includes(body.temaInteres as typeof TEMAS_INTERES[number])) {
+    return NextResponse.json({ error: "temaInteres debe ser un tema de interés válido" }, { status: 400 });
+  }
+
+  const semanasRaw = typeof body.tieneSemanasCotizadas === "string"
+    ? body.tieneSemanasCotizadas
+    : undefined;
+  const tieneSemanasCotizadas = semanasRaw
+    ? normalizarSemanasCotizadas(semanasRaw)
+    : undefined;
+  if (tieneSemanasCotizadas && !VALORES_SEMANAS_COTIZADAS.includes(tieneSemanasCotizadas as typeof VALORES_SEMANAS_COTIZADAS[number])) {
+    return NextResponse.json({ error: "tieneSemanasCotizadas debe ser 'si', 'no' o 'no sé'" }, { status: 400 });
   }
 
   try {
@@ -102,9 +121,9 @@ export async function POST(request: NextRequest) {
       edad,
       ciudad: body.ciudad as string,
       estado: (body.estado as string) || undefined,
-      yaEstaPensionado: (body.yaEstaPensionado as string).toLowerCase(),
+      yaEstaPensionado: body.yaEstaPensionado as string,
       temaInteres: body.temaInteres as string,
-      tieneSemanasCotizadas: (body.tieneSemanasCotizadas as string) || undefined,
+      tieneSemanasCotizadas,
       fuente: (body.fuente as string) || undefined,
       objetivoPrincipal: (body.objetivoPrincipal as string) || undefined,
       situacion: body.situacion as string,
