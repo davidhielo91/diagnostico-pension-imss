@@ -3,78 +3,16 @@ import { LeadsTable } from "@/components/leads/leads-table";
 import { ImportDialog } from "@/components/leads/import-dialog";
 import { Inbox, Download } from "lucide-react";
 import { Suspense } from "react";
-import { subDays } from "date-fns";
+import { buildLeadWhere, createLeadExportSearchParams, type LeadFilters } from "@/lib/lead-filters";
 
 const PAGE_SIZE = 30;
 
 interface PageProps {
-  searchParams: Promise<{
-    tab?: string;
-    estado?: string;
-    categoria?: string;
-    prioridad?: string;
-    fuente?: string;
-    busqueda?: string;
-    pagina?: string;
-    segmento?: string;
-    sinContacto?: string;
-    orden?: string;
-    segmentoInteres?: string;
-  }>;
+  searchParams: Promise<LeadFilters>;
 }
 
-async function getLeads(filters: Record<string, string | undefined>) {
-  const where: Record<string, unknown> = {};
-  const hoy = new Date();
-  const esArchivados = filters.tab === "archivados";
-
-  if (esArchivados) {
-    where.estadoLead = "Archivado";
-  } else {
-    if (filters.estado && filters.estado !== "Archivado") {
-      where.estadoLead = filters.estado;
-    } else {
-      where.estadoLead = { in: ["Nuevo", "Contactado"] };
-    }
-  }
-
-  if (filters.categoria) where.categoria = filters.categoria;
-  if (filters.prioridad) where.prioridad = filters.prioridad;
-  if (filters.fuente) where.fuente = filters.fuente;
-  if (filters.segmentoInteres) where.segmentoInteres = filters.segmentoInteres;
-
-  if (!esArchivados && filters.segmento) {
-    const seg = filters.segmento;
-    if (seg === "Invalidez") {
-      where.categoria = { contains: "Invalidez" };
-    } else if (seg === "Ley 73") {
-      where.categoria = { contains: "Ley 73" };
-    } else if (seg === "Cambio cesantía") {
-      where.categoria = { contains: "cesantía" };
-    } else if (seg === "Pensión baja") {
-      where.categoria = { contains: "baja" };
-    } else if (seg === "Requiere revisión") {
-      where.categoria = "Requiere revisión manual";
-    } else if (seg === "Regresaron") {
-      where.vecesRecibido = { gt: 1 };
-    }
-  }
-
-  if (!esArchivados && filters.sinContacto) {
-    const horas = parseInt(filters.sinContacto, 10);
-    if (!isNaN(horas)) {
-      where.createdAt = { lte: subDays(hoy, horas / 24) };
-      where.estadoLead = "Nuevo";
-    }
-  }
-
-  if (filters.busqueda) {
-    where.OR = [
-      { nombre: { contains: filters.busqueda } },
-      { correo: { contains: filters.busqueda } },
-      { telefono: { contains: filters.busqueda } },
-    ];
-  }
+async function getLeads(filters: LeadFilters) {
+  const where = buildLeadWhere(filters);
 
   const page = Math.max(1, parseInt(filters.pagina ?? "1") || 1);
   const skip = (page - 1) * PAGE_SIZE;
@@ -105,13 +43,7 @@ export default async function LeadsPage({ searchParams }: PageProps) {
   const { leads, filteredTotal, totalActivos, totalArchivados, page, pageSize } = await getLeads(filters);
   const tab = filters.tab === "archivados" ? "archivados" : "activos";
 
-  const exportParams = new URLSearchParams();
-  if (filters.estado) exportParams.set("estado", filters.estado);
-  if (filters.categoria) exportParams.set("categoria", filters.categoria);
-  if (filters.prioridad) exportParams.set("prioridad", filters.prioridad);
-  if (filters.fuente) exportParams.set("fuente", filters.fuente);
-  if (filters.busqueda) exportParams.set("busqueda", filters.busqueda);
-  if (tab === "archivados") exportParams.set("estado", "Archivado");
+  const exportParams = createLeadExportSearchParams(filters);
   const exportUrl = `/api/leads/export${exportParams.toString() ? `?${exportParams.toString()}` : ""}`;
 
   return (

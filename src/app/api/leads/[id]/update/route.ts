@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { calcularScoreViabilidad } from "@/lib/classification";
+import { CATEGORIAS_INTERNAS, ESTADOS_LEAD, PRIORIDADES, SEGMENTOS_INTERES, VIABILIDADES } from "@/lib/constants";
 
 const ALLOWED_FIELDS = [
   "categoria",
@@ -14,6 +15,14 @@ const ALLOWED_FIELDS = [
   "segmentoInteres",
 ];
 
+const CATEGORICAL_VALUES = {
+  categoria: CATEGORIAS_INTERNAS,
+  prioridad: PRIORIDADES,
+  viabilidad: VIABILIDADES,
+  estadoLead: ESTADOS_LEAD,
+  segmentoInteres: SEGMENTOS_INTERES,
+} as const;
+
 export async function PATCH(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -25,11 +34,32 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await _request.json();
-  const field = Object.keys(body)[0];
+  const fields = Object.keys(body);
+  const field = fields[0];
   const value = body[field];
 
-  if (!field || !ALLOWED_FIELDS.includes(field)) {
+  if (fields.length !== 1 || !field || !ALLOWED_FIELDS.includes(field)) {
     return NextResponse.json({ error: "Campo no permitido" }, { status: 400 });
+  }
+
+  if (field in CATEGORICAL_VALUES) {
+    const allowedValues = CATEGORICAL_VALUES[field as keyof typeof CATEGORICAL_VALUES];
+    const isEmptySegment = field === "segmentoInteres" && value === "";
+    if (!isEmptySegment) {
+      if (typeof value !== "string" || !allowedValues.includes(value as never)) {
+        return NextResponse.json({ error: "Valor no permitido" }, { status: 400 });
+      }
+    }
+  }
+
+  if (field === "userId" && value !== null && value !== "") {
+    if (typeof value !== "string") {
+      return NextResponse.json({ error: "Usuario no válido" }, { status: 400 });
+    }
+    const user = await prisma.user.findUnique({ where: { id: value }, select: { id: true, active: true } });
+    if (!user || !user.active) {
+      return NextResponse.json({ error: "Usuario no disponible" }, { status: 400 });
+    }
   }
 
   const oldLead = await prisma.lead.findUnique({ where: { id } });

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as XLSX from "xlsx";
 import { NextRequest } from "next/server";
 
@@ -16,6 +16,7 @@ vi.mock("@/lib/prisma", () => ({
 
 import { GET } from "@/app/api/leads/export/route";
 import { prisma } from "@/lib/prisma";
+import { buildLeadWhere } from "@/lib/lead-filters";
 
 const { auth } = await import("@/lib/auth");
 
@@ -51,6 +52,8 @@ function lead(overrides: Record<string, unknown> = {}) {
 beforeEach(() => {
   (auth as ReturnType<typeof vi.fn>).mockResolvedValue({ user: { id: "u1" } });
 });
+
+afterEach(() => vi.useRealTimers());
 
 describe("GET /api/leads/export — XLSX formula injection sanitization", () => {
   it("prefixes formula-prefixed user fields with an apostrophe in the exported sheet", async () => {
@@ -119,6 +122,43 @@ describe("GET /api/leads/export — XLSX formula injection sanitization", () => 
       cursor: { id: "lead-middle" },
       skip: 1,
       take: 1000,
+    }));
+  });
+
+  it("uses the same active-list filters as the leads screen", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-20T12:00:00Z"));
+    (prisma.lead.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    const filters = {
+      prioridad: "Alta",
+      fuente: "Google",
+      segmento: "Regresaron",
+      segmentoInteres: "A",
+      sinContacto: "72",
+      busqueda: "María",
+    };
+
+    await GET(new NextRequest(`https://example.com/api/leads/export?${new URLSearchParams(filters)}`));
+
+    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: buildLeadWhere(filters, new Date("2026-03-20T12:00:00Z")),
+    }));
+  });
+
+  it("uses the same archived-list filters as the leads screen", async () => {
+    (prisma.lead.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    const filters = {
+      tab: "archivados",
+      prioridad: "Baja",
+      fuente: "Facebook",
+      segmentoInteres: "B",
+      busqueda: "Juan",
+    };
+
+    await GET(new NextRequest(`https://example.com/api/leads/export?${new URLSearchParams(filters)}`));
+
+    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: buildLeadWhere(filters),
     }));
   });
 
