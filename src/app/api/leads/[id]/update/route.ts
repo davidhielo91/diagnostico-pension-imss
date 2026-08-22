@@ -80,23 +80,30 @@ export async function PATCH(
   if (field === "estadoLead" && value !== oldLead.estadoLead) {
     updateData.fechaUltimoContacto = new Date();
 
-    await prisma.leadStatusHistory.create({
-      data: {
-        leadId: id,
-        estadoAnterior: oldLead.estadoLead,
-        estadoNuevo: value,
-        userId: session.user.id,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.lead.update({
+        where: { id },
+        data: updateData,
+      });
+      await tx.leadStatusHistory.create({
+        data: {
+          leadId: id,
+          estadoAnterior: oldLead.estadoLead,
+          estadoNuevo: value,
+          userId: session.user.id,
+        },
+      });
+      await tx.leadActivity.create({
+        data: {
+          leadId: id,
+          tipo: "estado_cambiado",
+          nota: `${oldLead.estadoLead} → ${value}`,
+          userId: session.user.id,
+        },
+      });
     });
 
-    await prisma.leadActivity.create({
-      data: {
-        leadId: id,
-        tipo: "estado_cambiado",
-        nota: `${oldLead.estadoLead} → ${value}`,
-        userId: session.user.id,
-      },
-    });
+    return NextResponse.json({ success: true });
   }
 
   if (field === "categoria" && value !== oldLead.categoria) {

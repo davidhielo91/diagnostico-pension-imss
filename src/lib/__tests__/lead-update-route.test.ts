@@ -6,6 +6,7 @@ const prismaMock = vi.hoisted(() => ({
   user: { findUnique: vi.fn() },
   leadStatusHistory: { create: vi.fn() },
   leadActivity: { create: vi.fn() },
+  $transaction: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
@@ -25,6 +26,11 @@ function request(body: Record<string, unknown>) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  prismaMock.$transaction.mockImplementation(async (callback) => callback({
+    lead: prismaMock.lead,
+    leadStatusHistory: prismaMock.leadStatusHistory,
+    leadActivity: prismaMock.leadActivity,
+  }));
   prismaMock.lead.findUnique.mockResolvedValue({
     id: "lead-1",
     categoria: "Ley 73",
@@ -52,9 +58,45 @@ describe("PATCH /api/leads/[id]/update — categorical validation", () => {
     const response = await PATCH(request({ estadoLead: "Contactado" }), routeParams);
 
     expect(response.status).toBe(200);
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
     expect(prismaMock.lead.update).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ estadoLead: "Contactado" }),
     }));
+    expect(prismaMock.leadStatusHistory.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ estadoAnterior: "Nuevo", estadoNuevo: "Contactado" }),
+    });
+    expect(prismaMock.leadActivity.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ tipo: "estado_cambiado", nota: "Nuevo → Contactado" }),
+    });
+  });
+
+  it("rolls back a status change when its activity write fails", async () => {
+    const committed: string[] = [];
+    const staged: string[] = [];
+    const transaction = {
+      lead: { update: vi.fn().mockImplementation(async () => staged.push("lead")) },
+      leadStatusHistory: { create: vi.fn().mockImplementation(async () => staged.push("history")) },
+      leadActivity: { create: vi.fn().mockRejectedValue(new Error("activity write failed")) },
+    };
+    prismaMock.$transaction.mockImplementation(async (callback) => {
+      try {
+        await callback(transaction);
+        committed.push(...staged);
+      } catch (error) {
+        staged.length = 0;
+        throw error;
+      }
+    });
+
+    await expect(PATCH(request({ estadoLead: "Contactado" }), routeParams)).rejects.toThrow("activity write failed");
+
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+    expect(transaction.lead.update).toHaveBeenCalledTimes(1);
+    expect(transaction.leadStatusHistory.create).toHaveBeenCalledTimes(1);
+    expect(committed).toEqual([]);
+    expect(prismaMock.lead.update).not.toHaveBeenCalled();
+    expect(prismaMock.leadStatusHistory.create).not.toHaveBeenCalled();
+    expect(prismaMock.leadActivity.create).not.toHaveBeenCalled();
   });
 
   it("keeps clearing an interest segment working", async () => {
