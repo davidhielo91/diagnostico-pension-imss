@@ -38,17 +38,31 @@ async function mistral(messages: MistralMessage[], options: MistralOptions = {})
 
 const FRASES_PROHIBIDAS_MARCA = [
   "garantiz",
+  "asegur",
   "le va a subir",
   "le subirá",
+  "le subiremos",
   "recálculo automático",
   "aumento asegurado",
   "pensión va a subir",
   "pensión aumentará",
-  "le subiremos",
   "va a aumentar",
+  "aumentar",
+  "casos de éxito",
+  "mejor beneficio",
+  "máximo beneficio",
+  "transparencia",
+  "te ayudamos con todo",
+  "el mejor",
+  "el más completo",
+  "único en méxico",
+  "sin costo",
+  "sin cargo",
+  "gratis",
+  "gratuit",
 ];
 
-function violaReglasVoz(texto: string): boolean {
+export function violaReglasVoz(texto: string): boolean {
   const lower = texto.toLowerCase();
   return FRASES_PROHIBIDAS_MARCA.some((f) => lower.includes(f));
 }
