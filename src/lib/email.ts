@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { LANDING_URL, SCORE_UMBRAL_FUERTE, SCORE_UMBRAL_REVISAR } from "./constants";
+import { escapeHtml } from "./sanitize";
 
 export interface ConfirmacionClientePayload {
   nombre: string;
@@ -12,7 +13,7 @@ export async function enviarConfirmacionCliente({ nombre, correo }: Confirmacion
   if (!apiKey) return;
 
   const resend = new Resend(apiKey);
-  const n = nombre.split(" ")[0];
+  const n = escapeHtml(nombre.split(" ")[0]);
   const landingUrl = LANDING_URL;
 
   await resend.emails.send({
@@ -131,6 +132,12 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
   const tel10  = rawDigits.length === 12 && rawDigits.startsWith("52") ? rawDigits.slice(2) : rawDigits;
   const waUrl  = `https://wa.me/52${tel10}`;
 
+  const nombreEscapado   = escapeHtml(lead.nombre);
+  const telefonoEscapado = escapeHtml(lead.telefono);
+  const ciudadEscapada   = escapeHtml(lead.ciudad);
+  const temaEscapado     = escapeHtml(lead.temaInteres);
+  const situacionEscapada = escapeHtml(situacionCorta);
+
   const fila = (label: string, value: string) => `
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #f1f5f9;vertical-align:top;width:140px">
@@ -144,7 +151,7 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
   await resend.emails.send({
     from: `Gestor Leads IMSS <${from}>`,
     to: [to],
-    subject: `Nuevo lead: ${lead.nombre} · ${lead.temaInteres}`,
+    subject: `Nuevo lead: ${nombreEscapado} · ${temaEscapado}`,
     html: `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -171,7 +178,7 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
           <!-- NOMBRE + BADGES -->
           <tr>
             <td style="background:#ffffff;padding:28px 36px 0">
-              <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0f172a">${lead.nombre}</h2>
+              <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0f172a">${nombreEscapado}</h2>
 
               <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr>
@@ -194,10 +201,10 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
           <tr>
             <td style="background:#ffffff;padding:8px 36px 4px">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                ${fila("Teléfono", `<a href="${waUrl}" style="color:#16a34a;text-decoration:none;font-weight:600">${lead.telefono} (WhatsApp)</a>`)}
+                ${fila("Teléfono", `<a href="${waUrl}" style="color:#16a34a;text-decoration:none;font-weight:600">${telefonoEscapado} (WhatsApp)</a>`)}
                 ${fila("Edad", `${lead.edad} años`)}
-                ${fila("Ciudad", lead.ciudad)}
-                ${fila("Tema", lead.temaInteres)}
+                ${fila("Ciudad", ciudadEscapada)}
+                ${fila("Tema", temaEscapado)}
                 ${fila("Categoría", lead.categoria)}
                 ${fila("Fuente", lead.fuente ?? "Formulario web")}
               </table>
@@ -211,7 +218,7 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="background:#f8fafc;border-left:4px solid #002144;border-radius:0 8px 8px 0;padding:14px 18px">
-                    <p style="margin:0;font-size:14px;color:#334155;line-height:1.7">${situacionCorta}</p>
+                    <p style="margin:0;font-size:14px;color:#334155;line-height:1.7">${situacionEscapada}</p>
                   </td>
                 </tr>
               </table>

@@ -264,6 +264,33 @@ export function normalizarTelefono(tel: string): string {
   return digits;
 }
 
+export interface ClasificacionRecalculada {
+  categoria: string;
+  prioridad: string;
+  viabilidad: string;
+  segmentoInteres: string;
+  score: number;
+  etiqueta: string;
+}
+
+/**
+ * D14: recomputes every classification field from the FRESH input so a
+ * duplicate resubmission refreshes stale categoria/prioridad/viabilidad,
+ * segmentoInteres and the score pair instead of keeping the old values.
+ */
+export function recalcularClasificacion(input: LeadInput): ClasificacionRecalculada {
+  const clasificacion = clasificarLead(input);
+  const scoreResult = calcularScoreViabilidad(input, clasificacion.categoria);
+  return {
+    categoria: clasificacion.categoria,
+    prioridad: clasificacion.prioridad,
+    viabilidad: clasificacion.viabilidad,
+    segmentoInteres: clasificarSegmentoInteres(input),
+    score: scoreResult.score,
+    etiqueta: scoreResult.etiqueta,
+  };
+}
+
 async function encontrarLeadDuplicado(
   input: LeadInput,
   telNorm: string
@@ -286,7 +313,7 @@ async function manejarLeadDuplicado(
   existente: Lead,
   input: LeadInput
 ): Promise<Lead> {
-  const scoreResult = calcularScoreViabilidad(input, existente.categoria);
+  const recalculada = recalcularClasificacion(input);
 
   const updated = await prisma.lead.update({
     where: { id: existente.id },
@@ -294,8 +321,12 @@ async function manejarLeadDuplicado(
       vecesRecibido: { increment: 1 },
       situacion: input.situacion,
       fuente: input.fuente ?? existente.fuente,
-      scoreViabilidad: scoreResult.score,
-      etiquetaViabilidad: scoreResult.etiqueta,
+      categoria: recalculada.categoria,
+      prioridad: recalculada.prioridad,
+      viabilidad: recalculada.viabilidad,
+      segmentoInteres: recalculada.segmentoInteres,
+      scoreViabilidad: recalculada.score,
+      etiquetaViabilidad: recalculada.etiqueta,
     },
   });
 
@@ -303,7 +334,7 @@ async function manejarLeadDuplicado(
     data: {
       leadId: existente.id,
       tipo: "formulario_reenviado",
-      nota: `Volvió a enviar el formulario (${updated.vecesRecibido}ª vez). Fuente: ${input.fuente ?? "desconocida"} | Score: ${scoreResult.score} (${scoreResult.etiqueta})`,
+      nota: `Volvió a enviar el formulario (${updated.vecesRecibido}ª vez). Fuente: ${input.fuente ?? "desconocida"} | Score: ${recalculada.score} (${recalculada.etiqueta})`,
     },
   });
 
