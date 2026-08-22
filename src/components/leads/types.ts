@@ -45,7 +45,6 @@ export interface LeadDetailData {
   fechaUltimoContacto: Date | null;
   fechaProximaAccion: Date | null;
   vecesRecibido: number;
-  resumenIA: string | null;
   segmentoInteres?: string | null;
   createdAt: Date;
   asignadoA: { id: string; name: string } | null;
