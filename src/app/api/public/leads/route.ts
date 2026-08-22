@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { crearLeadConClasificacion } from "@/lib/classification";
 import { enviarPushNotificacion } from "@/lib/push";
+import { getTrustedRequestIp } from "@/lib/request-ip";
 
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 5;
@@ -39,7 +40,7 @@ const REQUIRED_FIELDS = [
 ];
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const ip = getTrustedRequestIp(request.headers);
   if (!checkRateLimit(ip)) {
     return NextResponse.json(
       { error: "Demasiadas solicitudes. Intente más tarde." },
@@ -63,6 +64,10 @@ export async function POST(request: NextRequest) {
       { error: "JSON inválido" },
       { status: 400 }
     );
+  }
+
+  if (typeof body.website === "string" && body.website.trim()) {
+    return NextResponse.json({ success: true }, { status: 200 });
   }
 
   for (const field of REQUIRED_FIELDS) {
