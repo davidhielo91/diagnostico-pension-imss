@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import * as XLSX from "xlsx";
 import { sanitizeCellValue } from "@/lib/sanitize";
+import { buildLeadWhere, readLeadFilters } from "@/lib/lead-filters";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -11,20 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = request.nextUrl;
-  const filters: Record<string, unknown> = {};
-  if (searchParams.get("estado")) filters.estadoLead = searchParams.get("estado");
-  if (searchParams.get("categoria")) filters.categoria = searchParams.get("categoria");
-  if (searchParams.get("prioridad")) filters.prioridad = searchParams.get("prioridad");
-  if (searchParams.get("fuente")) filters.fuente = searchParams.get("fuente");
-
-  const busqueda = searchParams.get("busqueda");
-  if (busqueda) {
-    filters.OR = [
-      { nombre: { contains: busqueda } },
-      { correo: { contains: busqueda } },
-      { telefono: { contains: busqueda } },
-    ];
-  }
+  const filters = buildLeadWhere(readLeadFilters(searchParams));
 
   const cursor = searchParams.get("cursor");
   const leads = await prisma.lead.findMany({
