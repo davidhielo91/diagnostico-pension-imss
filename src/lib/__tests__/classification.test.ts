@@ -331,6 +331,27 @@ describe("normalizarTelefono", () => {
 });
 
 describe("clasificarLead", () => {
+  it.each([
+    "Ya estoy pensionado / Pensión baja",
+    "Otro",
+    "Saber cuánto me tocaría de pensión",
+    "Ya estoy pensionado",
+    "Semanas cotizadas",
+    "Saber cuánto le tocaría",
+    "AFORE",
+    "Conservación de derechos",
+  ])("keeps the compatibility topic %s in manual review without inflating its score", (temaInteres) => {
+    const input = baseInput({
+      temaInteres,
+      edad: 30,
+      situacion: "Necesito orientación sobre mi caso de pensión.",
+    });
+
+    const clasificacion = clasificarLead(input);
+    expect(clasificacion.categoria).toBe("Requiere revisión manual");
+    expect(calcularScoreViabilidad(input, clasificacion.categoria).score).toBe(0);
+  });
+
   it("resolves categoria precedence: Ley-73-pension-baja combo wins first", () => {
     const input = baseInput({
       yaEstaPensionado: "si",

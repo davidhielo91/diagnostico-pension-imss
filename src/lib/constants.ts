@@ -7,7 +7,22 @@ export const TEMAS_INTERES = [
   "Invalidez",
   "Viudez",
   "No sé",
+  "Ya estoy pensionado / Pensión baja",
+  "Otro",
+  "Saber cuánto me tocaría de pensión",
+  "Ya estoy pensionado",
+  "Semanas cotizadas",
+  "Saber cuánto le tocaría",
+  "AFORE",
+  "Conservación de derechos",
 ] as const;
+
+export const VALORES_SEMANAS_COTIZADAS = ["si", "no", "no_sé"] as const;
+
+export function normalizarSemanasCotizadas(value: string): string {
+  if (value === "no_seguro" || value === "no_se") return "no_sé";
+  return value;
+}
 
 export const OBJETIVOS_PRINCIPALES = [
   "Saber si ya me puedo pensionar",

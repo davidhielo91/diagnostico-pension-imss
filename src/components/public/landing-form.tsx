@@ -2,22 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-
-const TEMA_MAP: Record<string, string> = {
-  saber_cuanto:          "Saber cuánto me tocaría de pensión",
-  ley_73:                "Ley 73",
-  ley_97:                "Ley 97",
-  modalidad_40:          "Modalidad 40",
-  modalidad_10:          "Modalidad 10",
-  semanas_cotizadas:     "Semanas cotizadas",
-  conservacion_derechos: "Conservación de derechos",
-  afore:                 "AFORE",
-  ya_pensionado:         "Ya estoy pensionado / Pensión baja",
-  pension_baja:          "Pensión baja",
-  invalidez:             "Invalidez",
-  viudez:                "Viudez",
-  otro:                  "Otro",
-};
+import { TEMAS_INTERES } from "@/lib/constants";
 
 const FUENTE_MAP: Record<string, string> = {
   tiktok:        "TikTok",
@@ -237,7 +222,7 @@ export function LandingForm() {
           ciudad:               fields.ciudad.trim(),
           estado:               ESTADOS_MAP[fields.estado] ?? fields.estado,
           yaEstaPensionado:     fields.yaEstaPensionado,
-          temaInteres:          TEMA_MAP[fields.temaInteres] ?? fields.temaInteres,
+          temaInteres:          fields.temaInteres,
           objetivoPrincipal:    fields.objetivoPrincipal,
           tieneSemanasCotizadas: fields.tieneSemanasCotizadas,
           fuente:               FUENTE_MAP[fields.fuente] ?? fields.fuente,
@@ -502,19 +487,7 @@ export function LandingForm() {
                 onChange={(e) => set("temaInteres", e.target.value)}
               >
                 <option value="">Selecciona un tema...</option>
-                <option value="saber_cuanto">Saber cuánto me tocaría de pensión</option>
-                <option value="ley_73">Ley 73</option>
-                <option value="ley_97">Ley 97</option>
-                <option value="modalidad_40">Modalidad 40</option>
-                <option value="modalidad_10">Modalidad 10</option>
-                <option value="semanas_cotizadas">Semanas cotizadas</option>
-                <option value="conservacion_derechos">Conservación de derechos</option>
-                <option value="afore">AFORE</option>
-                <option value="ya_pensionado">Ya estoy pensionado</option>
-                <option value="pension_baja">Pensión baja</option>
-                <option value="invalidez">Invalidez</option>
-                <option value="viudez">Viudez</option>
-                <option value="otro">Otro</option>
+                {TEMAS_INTERES.map((tema) => <option key={tema} value={tema}>{tema}</option>)}
               </select>
               {errors.temaInteres && <p className="field-error" role="alert">{errors.temaInteres}</p>}
             </div>
@@ -546,7 +519,7 @@ export function LandingForm() {
                 ¿Tienes reporte de semanas cotizadas? <span className="required-mark" aria-hidden="true">*</span>
               </legend>
               <div className="radio-row">
-                {[{ v: "si", l: "Sí" }, { v: "no", l: "No" }, { v: "no_seguro", l: "No estoy seguro" }].map(({ v, l }) => (
+                {[{ v: "si", l: "Sí" }, { v: "no", l: "No" }, { v: "no_sé", l: "No estoy seguro" }].map(({ v, l }) => (
                   <label key={v} className="radio-label">
                     <input
                       type="radio"

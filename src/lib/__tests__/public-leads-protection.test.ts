@@ -24,6 +24,17 @@ const validLead = {
   situacion: "Quiero revisar si puedo pensionarme este año.",
 };
 
+const compatibilityTopics = [
+  "Ya estoy pensionado / Pensión baja",
+  "Otro",
+  "Saber cuánto me tocaría de pensión",
+  "Ya estoy pensionado",
+  "Semanas cotizadas",
+  "Saber cuánto le tocaría",
+  "AFORE",
+  "Conservación de derechos",
+];
+
 function request(body: Record<string, unknown>, headers: HeadersInit = {}) {
   return new NextRequest("https://example.com/api/public/leads", {
     method: "POST",
@@ -50,6 +61,35 @@ describe("POST /api/public/leads — public form protection", () => {
       nombre: "María López",
       edad: 61,
     }));
+  });
+
+  it.each(compatibilityTopics.map((temaInteres, index) => [temaInteres, index]))("accepts the canonical topic %s", async (temaInteres, index) => {
+    const response = await POST(request({ ...validLead, temaInteres }, { "x-real-ip": `203.0.113.${100 + index}` }));
+
+    expect(response.status).toBe(201);
+    expect(vi.mocked(crearLeadConClasificacion)).toHaveBeenCalledWith(expect.objectContaining({ temaInteres }));
+  });
+
+  it.each(["no_seguro", "no_se"].map((tieneSemanasCotizadas, index) => [tieneSemanasCotizadas, index]))("normalizes the public weeks alias %s", async (tieneSemanasCotizadas, index) => {
+    const response = await POST(request(
+      { ...validLead, tieneSemanasCotizadas },
+      { "x-real-ip": `203.0.113.${120 + index}` },
+    ));
+
+    expect(response.status).toBe(201);
+    expect(vi.mocked(crearLeadConClasificacion)).toHaveBeenCalledWith(expect.objectContaining({
+      tieneSemanasCotizadas: "no_sé",
+    }));
+  });
+
+  it("rejects an unknown topic without creating a lead", async () => {
+    const response = await POST(request(
+      { ...validLead, temaInteres: "Unrecognized topic" },
+      { "x-real-ip": "203.0.113.150" },
+    ));
+
+    expect(response.status).toBe(400);
+    expect(vi.mocked(crearLeadConClasificacion)).not.toHaveBeenCalled();
   });
 
   it("silently drops a filled honeypot without creating a lead", async () => {

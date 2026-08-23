@@ -3,11 +3,17 @@ import { auth } from "@/lib/auth";
 import { type LeadInput } from "@/lib/classification";
 import { importLeadsInBatches, MAX_IMPORT_ROWS, type LeadImportClient } from "@/lib/lead-import";
 import { prisma } from "@/lib/prisma";
-import { FUENTES, OBJETIVOS_PRINCIPALES, TEMAS_INTERES } from "@/lib/constants";
+import {
+  FUENTES,
+  OBJETIVOS_PRINCIPALES,
+  TEMAS_INTERES,
+  VALORES_SEMANAS_COTIZADAS,
+  normalizarSemanasCotizadas,
+} from "@/lib/constants";
 import * as XLSX from "xlsx";
 
 const REQUIRED_ROW_FIELDS = ["nombre", "telefono", "edad", "ciudad", "yaEstaPensionado", "temaInteres", "situacion"] as const;
-const BOOLEAN_VALUES = ["si", "no", "no_sé"] as const;
+const BOOLEAN_VALUES = VALORES_SEMANAS_COTIZADAS;
 
 function isAllowedValue(value: string, allowedValues: readonly string[]): boolean {
   return allowedValues.includes(value);
@@ -74,11 +80,7 @@ function normalizarHeader(header: string): string {
 
 function parseBooleanish(val: unknown): string | undefined {
   if (val === undefined || val === null || val === "") return undefined;
-  const s = String(val).toLowerCase().trim();
-  if (["si", "sí", "yes", "y", "1"].includes(s)) return "si";
-  if (["no", "n", "0"].includes(s)) return "no";
-  if (["no sé", "no se", "nose", "doubt", "tal vez"].includes(s)) return "no_sé";
-  return s;
+  return String(val).trim();
 }
 
 function limpiarTelefono(tel: unknown): string {
@@ -213,7 +215,8 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      const semanas = parseBooleanish(row[columnMap.tieneSemanasCotizadas]);
+      const semanasRaw = parseBooleanish(row[columnMap.tieneSemanasCotizadas]);
+      const semanas = semanasRaw ? normalizarSemanasCotizadas(semanasRaw) : undefined;
       if (semanas && !isAllowedValue(semanas, BOOLEAN_VALUES)) {
         errors.push({ fila, error: "tieneSemanasCotizadas must be si, no, or no_sé" });
         continue;
