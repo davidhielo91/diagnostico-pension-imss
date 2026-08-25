@@ -11,6 +11,9 @@ services:
       - AUTH_URL=${AUTH_URL}
       - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@despacho.com}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL}
     depends_on:
       db:
         condition: service_healthy
