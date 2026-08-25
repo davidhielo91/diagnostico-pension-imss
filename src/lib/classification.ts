@@ -436,13 +436,17 @@ export async function crearLeadConClasificacion(
       prioridad:   clasificacion.prioridad,
       score:       scoreResult.score,
       etiqueta:    scoreResult.etiqueta,
-    }).catch(() => {});
+    }).catch((error) => {
+      console.error("[email] Error enviando notificación de nuevo lead:", error);
+    });
 
     if (correoNorm) {
       enviarConfirmacionCliente({
         nombre: input.nombre,
         correo: correoNorm,
-      }).catch(() => {});
+      }).catch((error) => {
+        console.error("[email] Error enviando confirmación al cliente:", error);
+      });
     }
 
   }
