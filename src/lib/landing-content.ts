@@ -1,7 +1,7 @@
 export const LANDING_FAQS = [
   {
     q: "¿El pre-diagnóstico tiene algún costo?",
-    a: "El pre-diagnóstico es la primera etapa: revisamos la información que nos compartes y te decimos si tiene sentido agendar el diagnóstico completo. Es el paso previo antes de decidir si continúas.\n\nEl Diagnóstico de Pensión IMSS, que es la cita a fondo donde se revisan documentos, se hace la proyección y se define la estrategia, tiene un costo que podrás consultar al momento de agendar, solo si decides continuar.",
+    a: "No, el pre-diagnóstico no tiene costo. Es la primera etapa: revisamos la información que nos compartes y te decimos si tiene sentido avanzar a un diagnóstico completo. En esta etapa no revisamos documentos ni hacemos proyecciones. El Diagnóstico de Pensión IMSS —la cita a fondo donde se revisan tus documentos, se hace la proyección y se define la estrategia— es un servicio aparte, con costo, y solo si decides continuar.",
   },
   {
     q: "¿Con cuántas semanas cotizadas me puedo pensionar en el IMSS?",

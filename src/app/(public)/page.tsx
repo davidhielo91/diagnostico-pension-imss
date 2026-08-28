@@ -49,19 +49,19 @@ const faqSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
-  description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
+  title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
+  description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
-    description: "Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
+    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
+    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Modalidad 40 y Semanas Cotizadas IMSS | Pre-Diagnóstico",
-    description: "Tu pensión IMSS puede ser mayor de lo que crees. Cuéntanos tu caso y en 24 horas hábiles te decimos qué opciones tienes.",
+    title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
+    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   icons: { icon: "/images/contador-gerardo-huerta-perfil.png" },
@@ -112,7 +112,7 @@ export default function LandingPage() {
               <em>puede ser mayor de lo que crees.</em>
             </h1>
             <p className="hero-sub">
-              Especialistas en Modalidad 40, Ley 73 y semanas cotizadas del IMSS. Cuéntanos tu caso y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo.
+              Revisamos tu caso de pensión IMSS —Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más—. Cuéntanos tu situación y en menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico completo.
             </p>
             <div className="hero-actions">
               <a href="#formulario" className="btn-cta">
@@ -193,7 +193,7 @@ export default function LandingPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/contador-gerardo-huerta-perfil.webp"
-                    alt="Lic. Gerardo Huerta, especialista en pensiones IMSS"
+                    alt="Contador Gerardo Huerta, especialista en pensiones IMSS"
                     className="profile-img"
                     width={280}
                     height={280}
@@ -203,12 +203,12 @@ export default function LandingPage() {
               </div>
               <div className="profile-info-col">
                 <p className="eyebrow eyebrow-light">Tu caso en manos de un especialista</p>
-                <h2 id="sec-gerardo">Lic. Gerardo Huerta</h2>
+                <h2 id="sec-gerardo">Contador Gerardo Huerta</h2>
                 <p className="profile-intro">Gerardo se especializa en descubrir lo que el IMSS no siempre te explica: semanas que no sabías que tenías, modalidades que nadie te ofreció y opciones que aún tienes tiempo de aprovechar.</p>
                 <dl className="profile-data">
                   <div className="profile-data-row">
                     <dt>Estudios</dt>
-                    <dd>Lic. en Contaduría (ITCJ) · Maestría en Derecho Fiscal (U. de Durango)</dd>
+                    <dd>Lic. en Contaduría (ITCJ) · Maestría en Derecho Fiscal (U. de Durango) · Maestría en Administración Pública · Diplomado en Contabilidad Gubernamental</dd>
                   </div>
                   <div className="profile-data-row">
                     <dt>Especialidad</dt>
@@ -253,7 +253,7 @@ export default function LandingPage() {
               <div className="evidence-text">
                 <p className="eyebrow">Prueba real, no promesas</p>
                 <h3>Así se ve un trámite que ya gestionamos ante el IMSS</h3>
-                <p>Este es un caso real: encontramos que a este cliente le correspondía cambiar de modalidad de pensión — de cesantía en edad avanzada a pensión por vejez, una opción con mayor monto y sin reducción por edad que nadie le había explicado. Presentamos el trámite ante el IMSS y este es el sello oficial de recibido.</p>
+                <p>en este caso, al revisar el expediente encontramos que a la persona le correspondía analizar un cambio de tipo de pensión: de cesantía en edad avanzada a pensión por vejez. Presentamos el trámite ante el IMSS y este es el sello oficial de recibido. Cada caso es distinto: que aquí haya procedido no significa que aplique igual para todas las personas.</p>
                 <p className="evidence-note">Datos personales del cliente cubiertos para proteger su privacidad.</p>
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function LandingPage() {
             <div className="section-header">
               <p className="eyebrow">Pre-diagnóstico</p>
               <h2 id="sec-form">Cuéntanos tu situación</h2>
-              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso para decirte si tiene sentido agendar un diagnóstico completo.</p>
+              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso, sin costo, para decirte si tiene sentido agendar un diagnóstico completo.</p>
             </div>
             <LandingForm />
           </div>
@@ -363,7 +363,7 @@ export default function LandingPage() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
               <div>
                 <h2 id="sec-privacidad">Aviso de confidencialidad</h2>
-                <p>La información que compartas será utilizada únicamente para revisar tu caso y contactarte. Tus datos no serán compartidos con terceros sin tu autorización. Al enviar el formulario, consientes el tratamiento de tu información de acuerdo con nuestro aviso de privacidad.</p>
+                <p>La información que compartas será utilizada únicamente para revisar tu caso y contactarte. Tus datos no serán compartidos con terceros sin tu autorización. Al enviar el formulario, consientes el tratamiento de tu información de acuerdo con nuestro <a href="/aviso-de-privacidad">aviso de privacidad</a>.</p>
               </div>
             </div>
           </div>
@@ -375,13 +375,12 @@ export default function LandingPage() {
       <footer className="site-footer" role="contentinfo">
         <div className="container footer-inner">
           <div className="footer-brand">
-            <p className="footer-name">Lic. Gerardo Huerta</p>
+            <p className="footer-name">Contador Gerardo Huerta</p>
             <p className="footer-desc">Pensiones IMSS y Jubilación · Despacho Fiscal 2087</p>
           </div>
           <div className="footer-contact">
-            <p>C. Toronja Roja 6275, Ampliación Aeropuerto</p>
-            <p>32698 Ciudad Juárez, Chihuahua</p>
-            <a href="mailto:contacto@contadorgerardohuerta.com">contacto@contadorgerardohuerta.com</a>
+            <p>C. Toronja Roja 6275, Col. El Granjero</p>
+            <p>32690 Ciudad Juárez, Chihuahua</p>
           </div>
           <nav className="footer-social" aria-label="Redes sociales">
             <a href="https://www.facebook.com/contadorgerardohuerta" target="_blank" rel="noopener noreferrer" aria-label="Facebook de Contador Gerardo Huerta (abre en nueva ventana)">Facebook</a>
@@ -390,7 +389,7 @@ export default function LandingPage() {
           </nav>
         </div>
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Despacho Fiscal 2087 · Todos los derechos reservados</p>
+          <p>© 2026 Contador Gerardo Huerta · Despacho Fiscal 2087 · Todos los derechos reservados</p>
         </div>
       </footer>
     </>
