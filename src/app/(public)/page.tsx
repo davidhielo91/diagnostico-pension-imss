@@ -50,18 +50,18 @@ const faqSchema = {
 
 export const metadata: Metadata = {
   title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-  description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
+  description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. El pre-diagnóstico es el primer paso, sin compromiso.",
   robots: { index: true, follow: true },
   openGraph: {
     title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
+    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. El pre-diagnóstico es el primer paso, sin compromiso.",
     type: "website",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Pre-Diagnóstico de Pensión IMSS | Contador Gerardo Huerta",
-    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. Pre-diagnóstico sin costo.",
+    description: "Cuéntanos tu caso de pensión IMSS: Ley 73, Ley 97, Modalidad 40, semanas cotizadas y más. En menos de 24 horas hábiles te decimos si tiene sentido agendar un diagnóstico. El pre-diagnóstico es el primer paso, sin compromiso.",
     images: ["/images/pre-diagnostico-imss.jpg"],
   },
   icons: { icon: "/images/contador-gerardo-huerta-perfil.png" },
@@ -271,7 +271,7 @@ export default function LandingPage() {
               {[
                 { n: 1, t: "Revisamos tu caso", d: "Nuestro equipo analiza los datos que nos compartes para entender tu situación e identificar si existe algo concreto que valga la pena revisar a fondo." },
                 { n: 2, t: "Te contactamos por correo o WhatsApp", d: "En máximo 24 horas hábiles te escribimos con nuestra conclusión. Si encontramos opciones para tu caso, te lo hacemos saber. Si no hay nada que revisar, también te lo decimos directo." },
-                { n: 3, t: "Si hay opciones, te invitamos a agendar el diagnóstico completo", d: "El Diagnóstico de Pensión IMSS es una cita a fondo donde se revisan tus documentos, se hace la proyección y se define la estrategia. Este servicio tiene un costo que podrás consultar al momento de agendar." },
+                { n: 3, t: "Si hay opciones, te invitamos a agendar el diagnóstico completo", d: "El Diagnóstico de Pensión IMSS es una cita a fondo donde se revisan tus documentos, se hace la proyección y se define la estrategia. Este servicio tiene un costo de $700 MXN." },
               ].map(({ n, t, d }) => (
                 <li key={n} className="step">
                   <div className="step-num" aria-label={`Paso ${n}`}>{n}</div>
@@ -350,7 +350,7 @@ export default function LandingPage() {
             <div className="section-header">
               <p className="eyebrow">Pre-diagnóstico</p>
               <h2 id="sec-form">Cuéntanos tu situación</h2>
-              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso, sin costo, para decirte si tiene sentido agendar un diagnóstico completo.</p>
+              <p className="section-desc">Completa los datos y nuestro equipo revisará tu caso para decirte si tiene sentido agendar un diagnóstico completo. Es el primer paso, sin compromiso.</p>
             </div>
             <LandingForm />
           </div>
