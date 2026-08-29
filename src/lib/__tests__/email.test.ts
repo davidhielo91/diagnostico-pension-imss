@@ -11,6 +11,19 @@ vi.mock("resend", () => {
 
 import { notificarNuevoLead, enviarConfirmacionCliente } from "@/lib/email";
 
+const leadPayload = {
+  nombre: "Juan Pérez",
+  telefono: "5512345678",
+  edad: 45,
+  ciudad: "Ciudad Juárez",
+  temaInteres: "Ley 73",
+  situacion: "Quiero saber si puedo pensionarme.",
+  categoria: "Ley 73",
+  prioridad: "Media",
+  score: 50,
+  etiqueta: "Revisar",
+};
+
 beforeEach(() => {
   process.env.RESEND_API_KEY = "test-key";
   process.env.NOTIFICATION_EMAIL = "admin@test.com";
@@ -21,6 +34,58 @@ beforeEach(() => {
 afterEach(() => {
   delete process.env.RESEND_API_KEY;
   delete process.env.NOTIFICATION_EMAIL;
+  delete process.env.ADMIN_EMAIL;
+});
+
+describe("notificarNuevoLead — recipients", () => {
+  it("sends two comma-separated notification recipients", async () => {
+    process.env.NOTIFICATION_EMAIL = "admin@test.com,dev@test.com";
+
+    await notificarNuevoLead(leadPayload);
+
+    expect(sendMock).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@test.com", "dev@test.com"],
+    }));
+  });
+
+  it("trims addresses and removes empty entries", async () => {
+    process.env.NOTIFICATION_EMAIL = " admin@test.com , , dev@test.com , ";
+
+    await notificarNuevoLead(leadPayload);
+
+    expect(sendMock).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@test.com", "dev@test.com"],
+    }));
+  });
+
+  it("deduplicates recipients while preserving their order", async () => {
+    process.env.NOTIFICATION_EMAIL = "admin@test.com,dev@test.com,admin@test.com";
+
+    await notificarNuevoLead(leadPayload);
+
+    expect(sendMock).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@test.com", "dev@test.com"],
+    }));
+  });
+
+  it("falls back to ADMIN_EMAIL when NOTIFICATION_EMAIL is not configured", async () => {
+    delete process.env.NOTIFICATION_EMAIL;
+    process.env.ADMIN_EMAIL = "admin@test.com";
+
+    await notificarNuevoLead(leadPayload);
+
+    expect(sendMock).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@test.com"],
+    }));
+  });
+
+  it("keeps a single notification recipient compatible", async () => {
+    await notificarNuevoLead(leadPayload);
+
+    expect(sendMock).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@test.com"],
+    }));
+  });
 });
 
 describe("notificarNuevoLead — HTML injection escaping", () => {

@@ -112,7 +112,7 @@ Abre [http://localhost:3000](http://localhost:3000). Login con las credenciales 
 | `NEXT_PUBLIC_BASE_URL` | — | URL pública de la app |
 | `RESEND_API_KEY` | — | Transactional email vía Resend |
 | `RESEND_FROM_EMAIL` | — | Dirección verificada en Resend |
-| `NOTIFICATION_EMAIL` | — | Recibe alertas de nuevos leads (default: `ADMIN_EMAIL`) |
+| `NOTIFICATION_EMAIL` | — | Recibe alertas de nuevos leads; admite destinatarios separados por comas (default: `ADMIN_EMAIL`) |
 | `VAPID_PUBLIC_KEY` | — | Web Push (generar con `npx web-push generate-vapid-keys`) |
 | `VAPID_PRIVATE_KEY` | — | Web Push |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | — | Mismo valor que `VAPID_PUBLIC_KEY` (expuesto al browser) |

@@ -103,11 +103,15 @@ export interface NuevoLeadPayload {
   etiqueta: string;
 }
 
+function normalizarDestinatarios(value: string): string[] {
+  return [...new Set(value.split(",").map((address) => address.trim()).filter(Boolean))];
+}
+
 export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const to     = process.env.NOTIFICATION_EMAIL ?? process.env.ADMIN_EMAIL ?? "";
+  const to     = normalizarDestinatarios(process.env.NOTIFICATION_EMAIL ?? process.env.ADMIN_EMAIL ?? "");
   const from   = process.env.RESEND_FROM_EMAIL ?? "noreply@contadorgerardohuerta.com";
-  if (!apiKey || !to) return;
+  if (!apiKey || to.length === 0) return;
 
   const resend = new Resend(apiKey);
 
@@ -150,7 +154,7 @@ export async function notificarNuevoLead(lead: NuevoLeadPayload): Promise<void> 
 
   await resend.emails.send({
     from: `Gestor Leads IMSS <${from}>`,
-    to: [to],
+    to,
     subject: `Nuevo lead: ${nombreEscapado} · ${temaEscapado}`,
     html: `<!DOCTYPE html>
 <html lang="es">
