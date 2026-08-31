@@ -56,3 +56,5 @@ CONTEXT.md
 CONFIGURACION-PRIVADA.md
 # Local AI runtime state
 .atl/
+*.xlsx
+.codegraph/

@@ -84,6 +84,32 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  const FIELD_LENGTH_LIMITS = [
+    { campo: "nombre", max: 120 },
+    { campo: "telefono", max: 25 },
+    { campo: "correo", max: 254 },
+    { campo: "ciudad", max: 80 },
+    { campo: "estado", max: 80 },
+    { campo: "objetivoPrincipal", max: 200 },
+    { campo: "fuente", max: 120 },
+    { campo: "situacion", max: 2000 },
+  ];
+  for (const { campo, max } of FIELD_LENGTH_LIMITS) {
+    const value = body[campo];
+    if (typeof value === "string" && value && value.length > max) {
+      return NextResponse.json(
+        { error: `El campo "${campo}" es demasiado largo` },
+        { status: 400 }
+      );
+    }
+  }
+
+  const telefono = body.telefono as string;
+  const digitos = telefono.replace(/\D/g, "");
+  if (digitos.length < 10 || digitos.length > 15) {
+    return NextResponse.json({ error: "Teléfono inválido" }, { status: 400 });
+  }
+
   const edad = parseInt(body.edad as string, 10);
   if (isNaN(edad) || edad < 18 || edad > 120) {
     return NextResponse.json(

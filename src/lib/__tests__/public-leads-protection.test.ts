@@ -53,7 +53,7 @@ describe("POST /api/public/leads — public form protection", () => {
     vi.mocked(enviarPushNotificacion).mockResolvedValue(undefined);
   });
 
-  it("accepts a legitimate submission and creates its lead", async () => {
+  it("accepts an ordinary valid lead", async () => {
     const response = await POST(request(validLead, { "x-real-ip": "203.0.113.24" }));
 
     expect(response.status).toBe(201);
@@ -61,6 +61,51 @@ describe("POST /api/public/leads — public form protection", () => {
       nombre: "María López",
       edad: 61,
     }));
+  });
+
+  it("rejects a situacion longer than 2000 characters", async () => {
+    const response = await POST(request(
+      { ...validLead, situacion: "a".repeat(2001) },
+      { "x-real-ip": "203.0.113.25" },
+    ));
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects a nombre longer than 120 characters", async () => {
+    const response = await POST(request(
+      { ...validLead, nombre: "a".repeat(121) },
+      { "x-real-ip": "203.0.113.26" },
+    ));
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects a telephone without digits", async () => {
+    const response = await POST(request(
+      { ...validLead, telefono: "hola" },
+      { "x-real-ip": "203.0.113.27" },
+    ));
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects a telephone with fewer than 10 digits", async () => {
+    const response = await POST(request(
+      { ...validLead, telefono: "123" },
+      { "x-real-ip": "203.0.113.28" },
+    ));
+
+    expect(response.status).toBe(400);
+  });
+
+  it("accepts a formatted international telephone", async () => {
+    const response = await POST(request(
+      { ...validLead, telefono: "+52 55 1234 5678" },
+      { "x-real-ip": "203.0.113.29" },
+    ));
+
+    expect(response.status).toBe(201);
   });
 
   it.each(compatibilityTopics.map((temaInteres, index) => [temaInteres, index]))("accepts the canonical topic %s", async (temaInteres, index) => {
