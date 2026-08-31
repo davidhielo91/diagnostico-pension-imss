@@ -497,3 +497,15 @@ Despacho Fiscal 2087
 Contador Gerardo Huerta`,
   };
 }
+
+export function generarWhatsApp(nombre: string, telefonoNormalizado: string | null): { url: string | null; mensaje: string } {
+  const primerNombre = nombre.trim().split(/\s+/)[0];
+  const mensaje = `Buen día, ${primerNombre}. Le escribimos del despacho del Contador Gerardo Huerta. Recibimos su solicitud de prediagnóstico de pensión IMSS y con gusto la revisamos. ¿Le parece si agendamos para platicar su caso? Primero se revisa; después se decide.`;
+
+  return {
+    url: telefonoNormalizado
+      ? `https://wa.me/52${telefonoNormalizado}?text=${encodeURIComponent(mensaje)}`
+      : null,
+    mensaje,
+  };
+}

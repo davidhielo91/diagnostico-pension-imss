@@ -9,6 +9,7 @@ import {
   normalizarTelefono,
   extraerMontoPension,
   generarCorreo,
+  generarWhatsApp,
   type LeadInput,
 } from "@/lib/classification";
 import {
@@ -423,5 +424,34 @@ describe("generarCorreo", () => {
     const { asunto, cuerpo } = generarCorreo("Juan Pérez");
     expect(asunto).toContain("Revisión de su caso");
     expect(cuerpo).toContain(LANDING_URL);
+  });
+});
+
+describe("generarWhatsApp", () => {
+  it("builds a URL with the Mexico prefix and normalized phone", () => {
+    const { url } = generarWhatsApp("Juan Pérez", "5512345678");
+
+    expect(url).toMatch(/^https:\/\/wa\.me\/525512345678/);
+  });
+
+  it("URL-encodes the message in the text parameter", () => {
+    const { url, mensaje } = generarWhatsApp("Juan Pérez", "5512345678");
+
+    expect(url).toContain(`text=${encodeURIComponent(mensaje)}`);
+  });
+
+  it("returns a null URL while preserving the message when no phone is registered", () => {
+    const { url, mensaje } = generarWhatsApp("Juan Pérez", null);
+
+    expect(url).toBeNull();
+    expect(mensaje).toContain("Juan");
+  });
+
+  it("uses only the first name and includes the exact closing", () => {
+    const { mensaje } = generarWhatsApp("Juan Pérez García", "5512345678");
+
+    expect(mensaje).toContain("Buen día, Juan.");
+    expect(mensaje).not.toContain("Juan Pérez");
+    expect(mensaje).toContain("Primero se revisa; después se decide.");
   });
 });

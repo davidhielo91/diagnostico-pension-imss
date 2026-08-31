@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { LeadWhatsappActions } from "./lead-whatsapp-actions";
 import { LeadEmailActions } from "./lead-email-actions";
 import { LeadArchiveAction } from "./lead-archive-action";
 import { LeadFollowupReminder } from "./lead-followup-reminder";
@@ -21,6 +22,10 @@ export function LeadContactCard({
         <p className="text-[10px] text-muted uppercase tracking-wider font-semibold px-0.5">
           Contactar
         </p>
+
+        <LeadWhatsappActions lead={lead} onError={onError} />
+
+        <Separator className="my-1" />
 
         <LeadEmailActions lead={lead} onError={onError} />
 
