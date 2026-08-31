@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { linkWhatsAppEntrante } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Gracias | Pre-Diagnóstico de Pensión IMSS",
@@ -35,31 +36,45 @@ export default function GraciasPage() {
           </div>
 
           <h1 style={{ fontSize: "clamp(1.6rem, 4vw, 2.2rem)", color: "var(--navy)", marginBottom: "1rem" }}>
-            Gracias, recibimos tu información
+            Gracias, recibimos su información
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "1rem" }}>
-            Nuestro equipo revisará los datos que compartiste para identificar qué alternativas podrían aplicar a tu situación.
+            Nuestro equipo revisará los datos que compartió para identificar qué alternativas podrían aplicar a su situación.
           </p>
 
           <div style={{ background: "var(--gold-pale)", border: "1.5px solid var(--gold-light)", borderRadius: "var(--radius-md)", padding: "1rem 1.25rem", fontSize: "0.95rem", color: "#2a3d10", margin: "1.5rem 0", textAlign: "left" }}>
-            <strong style={{ color: "#1a2d08" }}>¿Qué sigue?</strong> Revisaremos tu información y te contactaremos en un máximo de{" "}
-            <strong style={{ color: "#1a2d08" }}>24 horas hábiles</strong> por correo electrónico o WhatsApp. Asegúrate de revisar tu carpeta de{" "}
-            <strong style={{ color: "#1a2d08" }}>spam o correo no deseado</strong> y tener activo el número que nos proporcionaste.
+            <strong style={{ color: "#1a2d08" }}>¿Qué sigue?</strong> Puede escribirnos por WhatsApp ahora. También le daremos seguimiento por correo electrónico dentro de{" "}
+            <strong style={{ color: "#1a2d08" }}>24 horas hábiles</strong>. Asegúrese de revisar su carpeta de{" "}
+            <strong style={{ color: "#1a2d08" }}>spam o correo no deseado</strong>.
           </div>
 
           <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "2rem" }}>
-            Gracias por tu confianza. Haremos lo posible por orientarte en tu proceso.
+            Gracias por su confianza. Estamos disponibles para orientarle en su proceso.
           </p>
 
-          <Link
-            href="/"
-            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "var(--navy)", color: "#fff", fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 700, padding: "0.9rem 2rem", borderRadius: "50px", textDecoration: "none", minHeight: 52 }}
-          >
-            Volver al inicio
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-            </svg>
-          </Link>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+            <a
+              href={linkWhatsAppEntrante("Hola, acabo de llenar el prediagnóstico de pensión IMSS en su página y me gustaría que revisaran mi caso.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "var(--green-ok)", color: "#fff", fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 700, padding: "0.9rem 2rem", borderRadius: "50px", textDecoration: "none", minHeight: 52 }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M20 11.5a8.38 8.38 0 0 1-9.21 8.31L4 21l1.19-6.79A8.38 8.38 0 1 1 20 11.5Z" />
+                <path d="M8.7 8.5c.2-.5.4-.5.7-.5h.6c.2 0 .4.1.5.4l.7 1.7c.1.3.1.5-.1.7l-.5.7c.5 1 1.3 1.8 2.3 2.3l.7-.5c.2-.2.4-.2.7-.1l1.7.7c.3.1.4.3.4.5v.6c0 .3 0 .5-.5.7-.5.2-1 .3-1.5.2-3.4-.6-6.1-3.3-6.7-6.7-.1-.5 0-1 .2-1.5Z" />
+              </svg>
+              Escríbanos por WhatsApp
+            </a>
+            <Link
+              href="/"
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", color: "var(--navy)", fontFamily: "var(--font-body)", fontSize: "0.95rem", fontWeight: 600, padding: "0.55rem 1rem", borderRadius: "50px", textDecoration: "none", minHeight: 40 }}
+            >
+              Volver al inicio
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </main>
 

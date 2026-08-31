@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { LANDING_URL, SCORE_UMBRAL_FUERTE, SCORE_UMBRAL_REVISAR } from "./constants";
+import { LANDING_URL, linkWhatsAppEntrante, SCORE_UMBRAL_FUERTE, SCORE_UMBRAL_REVISAR } from "./constants";
 import { escapeHtml } from "./sanitize";
 
 export interface ConfirmacionClientePayload {
@@ -13,8 +13,10 @@ export async function enviarConfirmacionCliente({ nombre, correo }: Confirmacion
   if (!apiKey) return;
 
   const resend = new Resend(apiKey);
-  const n = escapeHtml(nombre.split(" ")[0]);
+  const primerNombre = nombre.split(" ")[0];
+  const n = escapeHtml(primerNombre);
   const landingUrl = LANDING_URL;
+  const whatsappUrl = linkWhatsAppEntrante(`Hola, soy ${primerNombre}. Llené el prediagnóstico de pensión IMSS y me gustaría que revisaran mi caso.`);
 
   await resend.emails.send({
     from: `Despacho Fiscal 2087 <${from}>`,
@@ -54,6 +56,9 @@ export async function enviarConfirmacionCliente({ nombre, correo }: Confirmacion
               </p>
               <p style="margin:0 0 24px;font-size:14px;color:#334155;line-height:1.7">
                 Si tienes alguna pregunta mientras tanto, no dudes en escribirnos directamente.
+              </p>
+              <p style="margin:0 0 24px;text-align:center">
+                <a href="${whatsappUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.3px">Escríbanos por WhatsApp</a>
               </p>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;border-left:4px solid #002144">
                 <tr>

@@ -119,6 +119,14 @@ export const COSTO_POR_FUENTE: Record<string, number> = {
 
 export const LANDING_URL = "https://pensiones.contadorgerardohuerta.com";
 
+// Número del despacho para enlaces wa.me entrantes (click-to-chat).
+// Formato: 52 + 10 dígitos, sin "+" ni espacios.
+export const WHATSAPP_DESPACHO = "526563506014";
+
+export function linkWhatsAppEntrante(mensaje: string): string {
+  return `https://wa.me/${WHATSAPP_DESPACHO}?text=${encodeURIComponent(mensaje)}`;
+}
+
 export const SCORE_UMBRAL_FUERTE = 70;
 export const SCORE_UMBRAL_REVISAR = 40;
 export const PENSION_MINIMA_GARANTIZADA = 10_634;

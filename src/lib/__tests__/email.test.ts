@@ -203,4 +203,14 @@ describe("enviarConfirmacionCliente — HTML injection escaping", () => {
     const subject = sendMock.mock.calls[0][0].subject as string;
     expect(subject).toContain("María, recibimos tu información");
   });
+
+  it("includes a WhatsApp link for the office", async () => {
+    await enviarConfirmacionCliente({
+      nombre: "María López",
+      correo: "maria@example.com",
+    });
+
+    const html = sendMock.mock.calls[0][0].html as string;
+    expect(html).toContain("https://wa.me/526563506014?text=");
+  });
 });
